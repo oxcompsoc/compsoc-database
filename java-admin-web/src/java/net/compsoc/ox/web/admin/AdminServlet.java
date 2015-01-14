@@ -9,10 +9,17 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.compsoc.ox.database.Database;
 import net.compsoc.ox.database.impl.dummy.DummyDatabase;
+import net.compsoc.ox.web.admin.sections.RootSection;
+import net.compsoc.ox.web.admin.sections.Section;
+import net.compsoc.ox.web.admin.util.PageBuilder;
+import net.compsoc.ox.web.admin.util.PageRenderer;
+import net.compsoc.ox.web.admin.util.PathInfo;
 
 public class AdminServlet extends HttpServlet {
     
     private final Database database;
+    private final PageRenderer pageRenderer = new PageRenderer();
+    private final Section rootSection = new RootSection();
     
     public AdminServlet(){
         // Create Database
@@ -22,9 +29,8 @@ public class AdminServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException {
-        response.setContentType("text/html");
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.getWriter().println("<h1>Hello Servlet</h1>");
-        response.getWriter().println("session=" + request.getSession(true).getId());
+        
+        rootSection.handlePage(new PathInfo(), new PageBuilder(pageRenderer, request, response));
+        
     }
 }
