@@ -1,0 +1,11 @@
+#! /bin/bash
+
+working=$(pwd)
+
+cd $working/java-core
+mvn -e clean install
+
+cd $working/java-admin-web
+mvn -e clean compile exec:java
+
+cd $working
