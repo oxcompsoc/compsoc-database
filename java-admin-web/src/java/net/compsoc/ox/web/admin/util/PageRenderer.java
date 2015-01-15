@@ -19,13 +19,15 @@ public class PageRenderer {
     public PageRenderer() {
         engine = new PebbleEngine();
         
+        engine.getLoader().setPrefix("resources/templates/");
+        
         // Load all templates
         System.out.println("Loading Templates");
         
         for (Template template : Template.values()) {
             System.out.println("Loading Template: " + template.path);
             try {
-                templates.put(template, engine.getTemplate("resources/templates/" + template.path));
+                templates.put(template, engine.getTemplate(template.path));
             } catch (PebbleException e) {
                 System.out.println("Unable to load template: " + e.getMessage());
             }

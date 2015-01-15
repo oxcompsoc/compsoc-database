@@ -28,6 +28,7 @@ public class PageBuilder {
     public void render(Template template) throws IOException {
         try {
             response.setContentType("text/html");
+            context.put("static_href", request.getContextPath() + "/static");
             renderer.render(template, context, response.getWriter());
         } catch (PebbleException e) {
             throw new IOException(e);
