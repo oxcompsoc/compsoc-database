@@ -14,6 +14,7 @@ import net.compsoc.ox.web.admin.sections.Section;
 import net.compsoc.ox.web.admin.util.PageBuilder;
 import net.compsoc.ox.web.admin.util.PageRenderer;
 import net.compsoc.ox.web.admin.util.PathInfo;
+import net.compsoc.ox.web.admin.util.StatusException;
 
 public class AdminServlet extends HttpServlet {
     
@@ -21,7 +22,7 @@ public class AdminServlet extends HttpServlet {
     private final PageRenderer pageRenderer = new PageRenderer();
     private final Section rootSection = new RootSection();
     
-    public AdminServlet(){
+    public AdminServlet() {
         // Create Database
         database = new DummyDatabase();
     }
@@ -30,7 +31,12 @@ public class AdminServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
         throws ServletException, IOException {
         
-        rootSection.handlePage(new PathInfo(), new PageBuilder(pageRenderer, request, response));
+        try {
+            rootSection.handle(new PathInfo(request), new PageBuilder(pageRenderer, database,
+                request, response));
+        } catch (StatusException e) {
+            response.sendError(e.code);
+        }
         
     }
 }

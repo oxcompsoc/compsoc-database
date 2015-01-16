@@ -1,0 +1,13 @@
+body {
+	background-color: #fff;
+}
+
+#header {
+  	background-color: #eee;
+  	border-bottom: 1px solid #ddd;
+  	margin: 0 0 20px;
+}
+
+#header h1 {
+	margin: 15px 0;
+}
