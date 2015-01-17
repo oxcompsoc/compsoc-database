@@ -9,7 +9,7 @@
   
   <form action="" method="POST" class="form-horizontal">
     <div class="form-group">
-      <label for="year" class="col-sm-2 control-label">Term &amp; Event ID</label>
+      <label for="year" class="col-sm-2 control-label{% if year_error == true or term_error == true or slug_error == true %} has-error{% endif %}">Term &amp; Event ID</label>
       <div class="col-sm-2{% if year_error %} has-error{% endif %}">
         <input type="number" class="form-control" id="year" name="year" placeholder="Year" value="{{ form_year }}">
       </div>
@@ -25,11 +25,11 @@
       </div>
   </div>
   <div class="form-group">
-    <label for="start_timestamp" class="col-sm-2 control-label">Start Time</label>
+    <label for="start_timestamp" class="col-sm-2 control-label{% if start_timestamp_error %} has-error{% endif %}">Start Time</label>
     <div class="col-sm-4{% if start_timestamp_error %} has-error{% endif %}">
       <input type="datetime-local" class="form-control" id="start_timestamp" name="start_timestamp" placeholder="Start Time" value="{{ form_start_timestamp }}">
     </div>
-    <label for="start_timestamp" class="col-sm-2 control-label add-collapsed-margin">End Time</label>
+    <label for="start_timestamp" class="col-sm-2 control-label add-collapsed-margin{% if end_timestamp_error %} has-error{% endif %}">End Time</label>
     <div class="col-sm-4{% if end_timestamp_error %} has-error{% endif %}">
       <input type="datetime-local" class="form-control" id="end_timestamp" name="end_timestamp" placeholder="End Time" value="{{ form_end_timestamp }}">
     </div>
@@ -37,8 +37,13 @@
   <div class="form-group{% if facebook_event_id_error %} has-error{% endif %}">
     <label for="facebook_event_id" class="col-sm-2 control-label">Facebook Event</label>
     <div class="col-sm-4">
-      <input type="text" class="form-control" id="facebook_event_id" name="facebook_event_id" placeholder="Facebook Event ID" value="{{ facebook_event_id }}">
+      <input type="text" class="form-control" id="facebook_event_id" name="facebook_event_id" placeholder="Facebook Event ID" value="{{ form_facebook_event_id }}">
     </div>
+    <label class="col-sm-6 control-label" style="text-align: left;">
+      {% if form_facebook_event_id is not null %}
+        <a href="https://www.facebook.com/events/{{ form_facebook_event_id }}/" target="_blank">View Event</a>
+      {% endif %}
+    </label>
   </div>
   <div class="form-group{% if name_error %} has-error{% endif %}">
     <label for="name" class="col-sm-2 control-label">Event Name</label>

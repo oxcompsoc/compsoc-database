@@ -1,8 +1,12 @@
 package net.compsoc.ox.web.admin.sections.events;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 import net.compsoc.ox.database.iface.events.Term;
@@ -17,6 +21,9 @@ import net.compsoc.ox.web.admin.util.StatusException;
 public class AddEventSection extends Section {
     
     private static final Pattern SLUG_PATTERN = Pattern.compile("^[a-z0-9\\_\\-]+$");
+    private static final Pattern FACEBOOK_ID_PATTERN = Pattern.compile("^[0-9]+$");
+    private static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm",
+        Locale.ENGLISH);
     
     @Override
     public void visitSection(PathInfo info, PageBuilder builder) throws StatusException {
@@ -101,7 +108,50 @@ public class AddEventSection extends Section {
                 builder.put("slug_error", true);
             }
             
-            builder.errors().add("Not Implemented");
+            Date startTimestamp = null;
+            if (startTimestampString == null || startTimestampString.isEmpty()) {
+                builder.errors().add("No Start time given");
+                builder.put("start_timestamp_error", true);
+            } else {
+                try {
+                    startTimestamp = DATETIME_FORMAT.parse(startTimestampString);
+                } catch (ParseException e) {
+                    builder.errors().add("Invalid Start Time");
+                    builder.put("start_timestamp_error", true);
+                }
+            }
+            
+            Date endTimestamp = null;
+            if (endTimestampString == null || endTimestampString.isEmpty()) {
+                builder.errors().add("No End time given");
+                builder.put("end_timestamp_error", true);
+            } else {
+                try {
+                    endTimestamp = DATETIME_FORMAT.parse(endTimestampString);
+                } catch (ParseException e) {
+                    builder.errors().add("Invalid End Time");
+                    builder.put("end_timestamp_error", true);
+                }
+            }
+            
+            if (startTimestamp != null && endTimestamp != null
+                && startTimestamp.compareTo(endTimestamp) > 0) {
+                builder.errors().add("End Time is before Start Time.");
+                builder.put("start_timestamp_error", true);
+                builder.put("end_timestamp_error", true);
+            }
+            
+            if (facebookEventIDString != null && !facebookEventIDString.isEmpty()) {
+                if (!FACEBOOK_ID_PATTERN.matcher(facebookEventIDString).matches()) {
+                    builder.errors().add("Invalid Facebook ID");
+                    builder.put("facebook_event_id_error", true);
+                }
+            }
+            
+            if(builder.errors().isEmpty()){
+                builder.database.events().addEvent(year, term, slug);
+                builder.messages().add("Successfully Added Event!");
+            }
             
             // Restore form data if an error exists
             if (!builder.errors().isEmpty()) {

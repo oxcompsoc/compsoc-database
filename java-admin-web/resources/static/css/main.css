@@ -33,10 +33,13 @@ div.toolbar h3 {
   	line-height: 30px;
 }
 
+label.has-error {
+	color: #a94442;
+}
+
 @media (max-width: 767px) { 
 	.form-group .add-collapsed-margin {
 		margin-top: 15px;
 	}
-
- }
+}
 
