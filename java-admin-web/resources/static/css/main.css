@@ -11,3 +11,32 @@ body {
 #header h1 {
 	margin: 15px 0;
 }
+
+#footer {
+	margin: 20px 0 0;
+}
+
+#footer p {
+	font-size: 11px;
+}
+
+div.toolbar {
+  	background-color: #eee;
+  	border: 1px solid #ddd;
+  	border-radius: 5px;
+  	margin: 15px 0;
+  	padding: 10px 10px;
+}
+
+div.toolbar h3 {
+	margin: 0;
+  	line-height: 30px;
+}
+
+@media (max-width: 767px) { 
+	.form-group .add-collapsed-margin {
+		margin-top: 15px;
+	}
+
+ }
+

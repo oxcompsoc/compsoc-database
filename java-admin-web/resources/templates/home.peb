@@ -1,3 +1,15 @@
 {% extends "page.peb" %}
 
-{% block content %}<h1>Home Page YEAH!</h1>{% endblock %}
+{% block content %}
+  <h2>
+    <a href="events/">Events</a>
+  </h2>
+  <p>
+    Manage events that appear on the website and the ics calendar file (that people import).
+  </p>
+  <p>
+    The calendar file is located at <code>http://ox.compsoc.net/events.ics</code>
+    (<a href="http://ox.compsoc.net/events.ics">view</a>).
+  </p>
+
+{% endblock %}

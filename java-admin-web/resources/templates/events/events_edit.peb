@@ -1,0 +1,62 @@
+{% extends "page.peb" %}
+
+{% block content %}
+  <div class="toolbar">
+    <h3>{{ title }}</h3>
+  </div>
+  
+  {% include "util/messages.peb" %}
+  
+  <form action="" method="POST" class="form-horizontal">
+    <div class="form-group">
+      <label for="year" class="col-sm-2 control-label">Term &amp; Event ID</label>
+      <div class="col-sm-2{% if year_error %} has-error{% endif %}">
+        <input type="number" class="form-control" id="year" name="year" placeholder="Year" value="{{ form_year }}">
+      </div>
+      <div class="col-sm-2 add-collapsed-margin{% if term_error %} has-error{% endif %}">
+        <select class="form-control" id="term" name="term" placeholder="Term">
+          {% for term in terms %}
+            <option value="{{ term.slug }}"{% if term.slug == form_term %} selected{% endif %}>{{ term.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-sm-6 add-collapsed-margin{% if slug_error %} has-error{% endif %}">
+        <input type="text" class="form-control" id="slug" name="slug" placeholder="Slug, e.g. geek_night_0 (used in the URL)" value="{{ form_slug }}">
+      </div>
+  </div>
+  <div class="form-group">
+    <label for="start_timestamp" class="col-sm-2 control-label">Start Time</label>
+    <div class="col-sm-4{% if start_timestamp_error %} has-error{% endif %}">
+      <input type="datetime-local" class="form-control" id="start_timestamp" name="start_timestamp" placeholder="Start Time" value="{{ form_start_timestamp }}">
+    </div>
+    <label for="start_timestamp" class="col-sm-2 control-label add-collapsed-margin">End Time</label>
+    <div class="col-sm-4{% if end_timestamp_error %} has-error{% endif %}">
+      <input type="datetime-local" class="form-control" id="end_timestamp" name="end_timestamp" placeholder="End Time" value="{{ form_end_timestamp }}">
+    </div>
+  </div>
+  <div class="form-group{% if facebook_event_id_error %} has-error{% endif %}">
+    <label for="facebook_event_id" class="col-sm-2 control-label">Facebook Event</label>
+    <div class="col-sm-4">
+      <input type="text" class="form-control" id="facebook_event_id" name="facebook_event_id" placeholder="Facebook Event ID" value="{{ facebook_event_id }}">
+    </div>
+  </div>
+  <div class="form-group{% if name_error %} has-error{% endif %}">
+    <label for="name" class="col-sm-2 control-label">Event Name</label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="name" name="name" placeholder="(e.g. Geek Night 0)" value="{{ form_name }}">
+    </div>
+  </div>
+  <div class="form-group{% if description_error %} has-error{% endif %}">
+    <label for="name" class="col-sm-2 control-label">Description</label>
+    <div class="col-sm-10">
+      <textarea rows="5" class="form-control" id="description" name="description" placeholder="You can use markdown">{{ form_description }}</textarea>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="submit" class="btn btn-default">Add Event</button>
+    </div>
+  </div>
+</form>
+  
+{% endblock %}

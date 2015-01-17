@@ -1,0 +1,11 @@
+{% if errors is not null and not errors.isEmpty %}
+  <div class="panel panel-danger text-danger">
+    <div class="panel-body">
+      {% if errors.size == 1 %}
+        {% for error in errors %}{{ error }}{% endfor %}
+      {% else %}
+        {% for error in errors %}<li>{{ error }}</ul>{% endfor %}
+      {% endif %}
+    </div>
+  </div>
+{% endif %}

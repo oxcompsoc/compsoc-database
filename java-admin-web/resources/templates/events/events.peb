@@ -1,0 +1,19 @@
+{% extends "page.peb" %}
+
+{% block content %}
+  <div class="toolbar">
+    <a href="add/" class="btn btn-primary btn-sm pull-right">Add</a>
+    <h3> Events </h3>
+  </div>
+  
+  <ul class="events">
+    {% for event in events %}
+    <li class="event">
+      {{ event.year }}<br/>
+      {{ event.term.name }}<br/>
+      {{ event.slug }}
+    </li>
+    {% endfor %}
+  </ul>
+  
+{% endblock %}

@@ -2,6 +2,8 @@ package net.compsoc.ox.web.admin.util;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,6 +20,8 @@ public class PageBuilder {
     
     private final PageRenderer renderer;
     private final Map<String, Object> context = new HashMap<>();
+    private List<String> messages;
+    private List<String> errors;
     
     public final Database database;
     public final HttpServletRequest request;
@@ -52,6 +56,22 @@ public class PageBuilder {
         } catch (PebbleException e) {
             throw new IOException(e);
         }
+    }
+    
+    public List<String> messages() {
+        if (messages == null) {
+            messages = new LinkedList<>();
+            put("messages", messages);
+        }
+        return messages;
+    }
+    
+    public List<String> errors() {
+        if (errors == null) {
+            errors = new LinkedList<>();
+            put("errors", errors);
+        }
+        return errors;
     }
     
 }
