@@ -7,7 +7,7 @@ import net.compsoc.ox.database.iface.events.Term;
 import net.compsoc.ox.database.iface.events.Venue;
 import net.compsoc.ox.database.util.TermDatesUtil;
 
-public class DummyEvent extends DummyDatabaseObject implements Event<Integer> {
+public class DummyEvent extends DummyDatabaseObject implements Event {
     
     private final int key;
     
@@ -72,11 +72,6 @@ public class DummyEvent extends DummyDatabaseObject implements Event<Integer> {
     @Override
     public Date endTimestamp() {
         return endTimestamp;
-    }
-
-    @Override
-    public Integer key() {
-        return key;
     }
 
     @Override

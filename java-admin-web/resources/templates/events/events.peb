@@ -8,16 +8,27 @@
 
   <table class="table table-hover">
     <tr>
-      <th>Term</th>
+      <th>Date</th>
       <th>Event</th>
       <th></th>
       <th>Start</th>
       <th>End</th>
     </tr>
     {% for event in events %}
+      {% if current_term != event.term or not same(current_year, event.year) %}
+        {% set current_term = event.term %}
+        {% set current_year = event.year %}
+        <tr><td colspan="5" class="text-center active"><strong>{{ current_term.name }} {{ event.year }}</strong></td></tr>
+        {% set current_wk = event.getTermWeek %}
+        <tr><td colspan="5" class="info"><strong class="text-primary">Week {{ current_wk }}</strong></td></tr>
+      {% endif %}
+      {% if current_wk != event.getTermWeek %}
+        {% set current_wk = event.getTermWeek %}
+        <tr><td colspan="5" class="info"><strong class="text-primary">Week {{ current_wk }}</strong></td></tr>
+      {% endif %}
       <tr>
-        <td class="title">
-          {{ event.year }} - {{ event.term.name }} - Week {{ event.getTermWeek }}
+        <td>
+          <strong>{{ event.startTimestamp | day_of_week }}</strong> - {{ event.startTimestamp | long_date }}
         </td>
         <td>
           <a href="view/{{ event.keyString }}/">{{ event.title is not null ? event.title : "&lt;NO NAME&gt;" }}</a>
@@ -26,10 +37,10 @@
         (<a class="text-muted" href="http://ox.compsoc.net/events/{{ event.year }}/{{ event.term.slug }}/{{ event.slug }}/" target="_blank">View on Website</a>)
         </td>
         <td>
-          {{ event.startTimestamp }}
+          {{ event.startTimestamp | time }}
         </td>
         <td>
-          {{ event.endTimestamp }}
+          {{ event.endTimestamp | date_if_different(event.startTimestamp) }}
         </td>
       </tr>
     {% endfor %}

@@ -12,6 +12,7 @@ import net.compsoc.ox.web.admin.util.StatusException;
 public class EventsSection extends Section {
     
     private final Section addSection = new AddEventSection();
+    private final Section viewSection = new ViewEventSection();
 
     @Override
     public void visitSection(PathInfo info, PageBuilder builder) throws StatusException {
@@ -32,6 +33,8 @@ public class EventsSection extends Section {
         switch(slug){
             case "add":
                 return addSection;
+            case "view":
+                return viewSection;
         }
         return null;
     }

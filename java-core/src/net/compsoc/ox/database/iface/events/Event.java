@@ -2,16 +2,14 @@ package net.compsoc.ox.database.iface.events;
 
 import java.util.Date;
 
-public interface Event<EKey> {
+public interface Event {
     
     // Key
-    
-    public EKey key();
     public String keyString();
     
     // Getters
     
-    // Unique
+    // Unique Triplet
     public int year();
     public Term term();
     public String slug();

@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import net.compsoc.ox.database.iface.core.KeyFactory;
+import net.compsoc.ox.database.iface.core.InvalidKeyException;
 import net.compsoc.ox.database.iface.core.NotFoundException;
 import net.compsoc.ox.database.iface.events.Event;
 import net.compsoc.ox.database.iface.events.Events;
@@ -18,11 +18,11 @@ import net.compsoc.ox.database.iface.events.Term;
 import net.compsoc.ox.database.iface.events.Terms;
 import net.compsoc.ox.database.iface.events.Venues;
 
-public class DummyEvents extends DummyDatabaseObject implements Events<Integer> {
+public class DummyEvents extends DummyDatabaseObject implements Events {
     
     private static final DateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
     
-    private Map<Integer, Event<Integer>> events = new LinkedHashMap<>();
+    private Map<Integer, Event> events = new LinkedHashMap<>();
     private int nextKey = 0;
     
     private DummyVenues venues; // Lazily Instantiated
@@ -35,21 +35,22 @@ public class DummyEvents extends DummyDatabaseObject implements Events<Integer> 
     {
         try {
             // Initialise Dummy Data
-            Event<?> e;
+            Event e;
             
             e = addEvent(2015, terms().getTermBySlug("hilary"), "geek_night_0");
             e.setTitle("Some Event");
-            e.setDescription("This is a desctiption");
+            e.setDescription("This is a description");
             e.setFacebookEventID("1234");
             e.setStartTimestamp(FORMAT.parse("2015-01-19"));
             e.setEndTimestamp(new Date());
             
-            e = addEvent(2015, terms().getTermBySlug("hilary"), "geek_night_0");
+            e = addEvent(2014, terms().getTermBySlug("trinity"), "geek_night_0");
             e.setTitle("Some Event");
-            e.setDescription("This is a desctiption");
+            e.setDescription("This is a description\nthat\ngoes\nover\nmultiple\nlines.");
             e.setFacebookEventID("1234");
-            e.setStartTimestamp(FORMAT.parse("2015-01-17"));
-            e.setEndTimestamp(new Date());
+            e.setStartTimestamp(FORMAT.parse("2014-06-14"));
+            e.setEndTimestamp(FORMAT.parse("2014-06-14"));
+            
         } catch (ParseException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -57,7 +58,7 @@ public class DummyEvents extends DummyDatabaseObject implements Events<Integer> 
         
     }
     
-    public List<Event<Integer>> getEvents() {
+    public List<Event> getEvents() {
         return new ArrayList<>(events.values());
     }
     
@@ -82,16 +83,20 @@ public class DummyEvents extends DummyDatabaseObject implements Events<Integer> 
             terms = new DummyTerms();
         return terms;
     }
-    
+
     @Override
-    public void getEvent(Integer key) throws NotFoundException {
-        // TODO Auto-generated method stub
-        
-    }
-    
-    @Override
-    public KeyFactory<Integer> eventKeyFactory() {
-        return IntegerKeyFactory.SINGLETON;
+    public Event getEvent(String key) throws NotFoundException, InvalidKeyException {
+        int intKey;
+        try {
+            intKey = Integer.parseInt(key);
+        } catch(NumberFormatException e){
+            throw new InvalidKeyException();
+        }
+        Event e = events.get(intKey);
+        if(e == null)
+            throw new NotFoundException();
+        else
+            return e;
     }
     
 }

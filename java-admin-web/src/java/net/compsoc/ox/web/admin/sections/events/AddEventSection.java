@@ -9,8 +9,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
+import net.compsoc.ox.database.iface.events.Event;
 import net.compsoc.ox.database.iface.events.Term;
-import net.compsoc.ox.web.admin.sections.MainSectionsEnum;
 import net.compsoc.ox.web.admin.sections.Section;
 import net.compsoc.ox.web.admin.templating.Template;
 import net.compsoc.ox.web.admin.util.FormHandler;
@@ -27,7 +27,6 @@ public class AddEventSection extends Section {
     
     @Override
     public void visitSection(PathInfo info, PageBuilder builder) throws StatusException {
-        builder.setActivePage(MainSectionsEnum.EVENTS);
     }
     
     @Override
@@ -148,9 +147,25 @@ public class AddEventSection extends Section {
                 }
             }
             
-            if(builder.errors().isEmpty()){
-                builder.database.events().addEvent(year, term, slug);
-                builder.messages().add("Successfully Added Event!");
+            if (builder.errors().isEmpty()) {
+                Event e = builder.database.events().addEvent(year, term, slug);
+                e.setStartTimestamp(startTimestamp);
+                e.setEndTimestamp(endTimestamp);
+                
+                if (facebookEventIDString != null)
+                    e.setFacebookEventID(facebookEventIDString);
+                
+                if (name != null)
+                    e.setTitle(name);
+                
+                if (description != null)
+                    e.setDescription(description);
+                
+                String msg =
+                    String.format("Successfully Added Event! "
+                        + "<a href=\"../view/%s/\">View Event</a>", e.keyString());
+                
+                builder.messages().add(msg);
             }
             
             // Restore form data if an error exists

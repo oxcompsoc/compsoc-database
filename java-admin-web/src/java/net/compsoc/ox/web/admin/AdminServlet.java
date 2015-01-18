@@ -14,6 +14,7 @@ import net.compsoc.ox.web.admin.sections.Section;
 import net.compsoc.ox.web.admin.util.PageBuilder;
 import net.compsoc.ox.web.admin.util.PageRenderer;
 import net.compsoc.ox.web.admin.util.PathInfo;
+import net.compsoc.ox.web.admin.util.RedirectException;
 import net.compsoc.ox.web.admin.util.StatusException;
 
 public class AdminServlet extends HttpServlet {
@@ -45,6 +46,9 @@ public class AdminServlet extends HttpServlet {
         try {
             rootSection.handle(new PathInfo(request), new PageBuilder(pageRenderer, database,
                 request, response));
+        } catch (RedirectException e) {
+            response.setStatus(e.code);
+            response.setHeader("Location", e.location);
         } catch (StatusException e) {
             response.sendError(e.code);
         }

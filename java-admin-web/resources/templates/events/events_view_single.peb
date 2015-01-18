@@ -1,0 +1,70 @@
+{% extends "page.peb" %}
+
+{% block content %}
+  <div class="toolbar">
+    <div class="btn-toolbar pull-right " role="toolbar">
+      <div class="btn-group" role="group">
+        <a href="http://ox.compsoc.net/events/{{ event.year }}/{{ event.term.slug }}/{{ event.slug }}/" target="_blank" class="btn btn-default btn-sm">View on Website</a>
+      </div>
+      <div class="btn-group" role="group">
+        <a href="../../edit/{{ event.keyString }}/" class="btn btn-primary btn-sm">Edit</a>
+      </div>
+    </div>
+    <h3>{{ title }}</h3>
+  </div>
+  
+  {% include "util/messages.peb" %}
+  
+  <div class="form-horizontal">
+    <div class="form-group">
+      <label class="col-sm-2 control-label">Event Name:</label>
+      <div class="col-sm-10 control-label" style="text-align: left;">
+        {{ event.title }} (<code>{{ event.slug }}</code>)
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-2 control-label">Term Date:</label>
+      <div class="col-sm-10 control-label" style="text-align: left;">
+        {{ event.startTimestamp | day_of_week }} Week {{ event.getTermWeek }} - {{ event.term.name}} {{ event.year }}
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-2 control-label">Start:</label>
+      <div class="col-sm-4 control-label" style="text-align: left;">
+        {{ event.startTimestamp | short_date_and_time }}
+      </div>
+      <label class="col-sm-2 control-label add-collapsed-margin">End:</label>
+      <div class="col-sm-4 control-label" style="text-align: left;">
+        {{ event.endTimestamp | short_date_and_time }}
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-2 control-label">Venue:</label>
+      <div class="col-sm-10 control-label" style="text-align: left;">
+        {% if event.venue is not null %}
+          {{ venue.name }}
+        {% else %}
+          No Venue
+        {% endif %}
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-2 control-label">Facebook Event:</label>
+      <div class="col-sm-10 control-label" style="text-align: left;">
+        {% if event.facebookEventID is not null %}
+          <a href="https://www.facebook.com/events/{{ event.facebookEventID }}/" target="_blank">View Facebook Event</a>
+        {% else %}
+          No Facebook Event
+        {% endif %}
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-2 control-label">Description:</label>
+      <div class="col-sm-10 control-label" style="text-align: left;">
+        <pre>{{ event.description }}</pre>
+      </div>
+    </div>
+  </div>
+  
+  
+{% endblock %}

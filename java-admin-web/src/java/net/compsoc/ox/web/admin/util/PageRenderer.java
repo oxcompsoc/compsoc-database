@@ -19,6 +19,8 @@ public class PageRenderer {
     public PageRenderer() {
         engine = new PebbleEngine();
         
+        engine.addExtension(new PebbleExtension());
+        
         engine.getLoader().setPrefix("resources/templates/");
         
         // Load all templates
