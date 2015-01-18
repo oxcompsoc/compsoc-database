@@ -2,7 +2,14 @@ package net.compsoc.ox.database.iface.events;
 
 import java.util.Date;
 
-public interface Event {
+public interface Event<EKey> {
+    
+    // Key
+    
+    public EKey key();
+    public String keyString();
+    
+    // Getters
     
     // Unique
     public int year();
@@ -16,5 +23,17 @@ public interface Event {
     
     public Date startTimestamp();
     public Date endTimestamp();
+    public Integer getTermWeek();
+    
+    // Setters
+    public void setPrimary(int year, Term term, String slug);
+    
+    public void setTitle(String title);
+    public void setDescription(String description);
+    public void setFacebookEventID(String id);
+    public void setVenue(Venue venue);
+    
+    public void setStartTimestamp(Date start);
+    public void setEndTimestamp(Date end);
     
 }

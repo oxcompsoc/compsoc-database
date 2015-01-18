@@ -8,4 +8,6 @@ public interface Terms {
     
     public List<Term> getTerms();
     
+    public TermDates termDates();
+    
 }

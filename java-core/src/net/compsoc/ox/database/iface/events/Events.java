@@ -2,14 +2,21 @@ package net.compsoc.ox.database.iface.events;
 
 import java.util.List;
 
-public interface Events {
+import net.compsoc.ox.database.iface.core.KeyFactory;
+import net.compsoc.ox.database.iface.core.NotFoundException;
+
+public interface Events<EKey> {
     
     public Terms terms();
     
     public Venues venues();
     
-    public List<Event> getEvents();
+    public List<Event<EKey>> getEvents();
     
-    public Event addEvent(int year, Term term, String slug);
+    public void getEvent(EKey key) throws NotFoundException;
+    
+    public Event<EKey> addEvent(int year, Term term, String slug);
+    
+    public KeyFactory<EKey> eventKeyFactory();
     
 }
