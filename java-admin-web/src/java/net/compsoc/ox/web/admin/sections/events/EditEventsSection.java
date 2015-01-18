@@ -2,9 +2,10 @@ package net.compsoc.ox.web.admin.sections.events;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.Calendar;
 import java.util.Date;
 
+import net.compsoc.ox.database.iface.core.InvalidKeyException;
+import net.compsoc.ox.database.iface.core.NotFoundException;
 import net.compsoc.ox.database.iface.events.Event;
 import net.compsoc.ox.database.iface.events.Term;
 import net.compsoc.ox.web.admin.sections.Section;
@@ -15,42 +16,99 @@ import net.compsoc.ox.web.admin.util.PathInfo;
 import net.compsoc.ox.web.admin.util.RedirectException;
 import net.compsoc.ox.web.admin.util.StatusException;
 
-public class AddEventSection extends Section {
+public class EditEventsSection extends Section {
     
-    
+    private final Section EditSingleEventSection = new ViewSingleEventSection();
     
     @Override
-    public void visitSection(PathInfo info, PageBuilder builder) throws StatusException {
-    }
+    public void visitSection(PathInfo info, PageBuilder builder) throws StatusException {}
     
     @Override
     public void renderPage(PathInfo info, PageBuilder builder) throws IOException, StatusException,
         RedirectException {
-        builder.put("title", "Add Event");
-        builder.put("button_label", "Add Event");
-        
-        // Set sensible default form details
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        builder.put("form_year", calendar.get(Calendar.YEAR));
-        
-        if (new AddEventFormHandler().handle(builder))
-            return;
-        
-        builder.put("terms", builder.database.events().terms().getTerms());
-        
-        builder.render(Template.EVENTS_EDIT);
+        throw new RedirectException(301, "../");
     }
     
     @Override
     public Section getSubsection(String slug) {
-        return null;
+        return EditSingleEventSection;
     }
     
-    private static class AddEventFormHandler extends FormHandler {
+    public static class ViewSingleEventSection extends Section {
         
         @Override
-        public boolean doPostRequest(PageBuilder builder) {
+        public void visitSection(PathInfo info, PageBuilder builder) throws StatusException {
+            
+        }
+        
+        @Override
+        public void renderPage(PathInfo info, PageBuilder builder) throws IOException,
+            StatusException, RedirectException {
+            
+            // Get Event
+            Event event;
+            try {
+                event = builder.database.events().getEvent(info.slug());
+            } catch (InvalidKeyException | NotFoundException ev) {
+                throw StatusException.do404();
+            }
+            
+            fillFormWithData(builder, event);
+            
+            // Process form data
+            if (new EditEventFormHandler(event).handle(builder))
+                return;
+            
+            builder.render(Template.EVENTS_EDIT);
+        }
+        
+        @Override
+        public Section getSubsection(String slug) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+        
+    }
+    
+    private static void fillFormWithData(PageBuilder builder, Event event) {
+        if (event.title() != null)
+            builder.put("title", "Edit Event: " + event.title());
+        else
+            builder.put("title", "Edit Event: <no name>");
+        
+        builder.put("button_label", "Save");
+        
+        builder.put("terms", builder.database.events().terms().getTerms());
+        
+        // Put properties
+        builder.put("form_year", event.year());
+        builder.put("form_term", event.term().slug());
+        builder.put("form_slug", event.slug());
+        
+        Date start = event.startTimestamp();
+        if (start != null)
+            builder.put("form_start_timestamp", EventsConstants.DATETIME_FORMAT.format(start));
+        
+        Date end = event.endTimestamp();
+        if (end != null)
+            builder.put("form_end_timestamp", EventsConstants.DATETIME_FORMAT.format(end));
+        
+        builder.put("form_facebook_event_id", event.facebookEventID());
+        
+        builder.put("form_name", event.title());
+        builder.put("form_description", event.description());
+    }
+    
+    private static class EditEventFormHandler extends FormHandler {
+        
+        public final Event event;
+        
+        public EditEventFormHandler(Event event) {
+            this.event = event;
+        }
+        
+        @Override
+        public boolean doPostRequest(PageBuilder builder) throws RedirectException {
             
             // Get all values
             String yearString = builder.request.getParameter("year");
@@ -144,24 +202,22 @@ public class AddEventSection extends Section {
             }
             
             if (builder.errors().isEmpty()) {
-                Event e = builder.database.events().addEvent(year, term, slug);
-                e.setStartTimestamp(startTimestamp);
-                e.setEndTimestamp(endTimestamp);
+                event.setPrimary(year, term, slug);
+                event.setStartTimestamp(startTimestamp);
+                event.setEndTimestamp(endTimestamp);
                 
                 if (facebookEventIDString != null)
-                    e.setFacebookEventID(facebookEventIDString);
+                    event.setFacebookEventID(facebookEventIDString);
                 
                 if (name != null)
-                    e.setTitle(name);
+                    event.setTitle(name);
                 
                 if (description != null)
-                    e.setDescription(description);
+                    event.setDescription(description);
                 
-                String msg =
-                    String.format("Successfully Added Event! "
-                        + "<a href=\"../view/%s/\">View Event</a>", e.keyString());
+                builder.messages().add("Successfully Updated Event!");
                 
-                builder.messages().add(msg);
+                throw new RedirectException(String.format("../../view/%s/", event.keyString()));
             }
             
             // Restore form data if an error exists

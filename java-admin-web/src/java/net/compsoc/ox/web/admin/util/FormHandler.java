@@ -5,8 +5,9 @@ public abstract class FormHandler {
     /**
      * @return return true if the page was handled and content written to the
      *         response, false otherwise.
+     * @throws RedirectException 
      */
-    public boolean handle(PageBuilder builder) {
+    public boolean handle(PageBuilder builder) throws RedirectException {
         if(builder.request.getMethod().equals("POST"))
             return doPostRequest(builder);
         return false;
@@ -14,7 +15,8 @@ public abstract class FormHandler {
     /**
      * @return return true if the page was handled and content written to the
      *         response, false otherwise.
+     * @throws RedirectException 
      */
-    public abstract boolean doPostRequest(PageBuilder builder);
+    public abstract boolean doPostRequest(PageBuilder builder) throws RedirectException;
     
 }

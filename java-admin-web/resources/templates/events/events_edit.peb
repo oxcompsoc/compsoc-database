@@ -35,7 +35,7 @@
     </div>
   </div>
   <div class="form-group{% if facebook_event_id_error %} has-error{% endif %}">
-    <label for="facebook_event_id" class="col-sm-2 control-label">Facebook Event</label>
+    <label for="facebook_event_id" class="col-sm-2 control-label">Facebook Event ID</label>
     <div class="col-sm-4">
       <input type="text" class="form-control" id="facebook_event_id" name="facebook_event_id" placeholder="Facebook Event ID" value="{{ form_facebook_event_id }}">
     </div>
@@ -59,7 +59,7 @@
   </div>
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" class="btn btn-default">Add Event</button>
+      <button type="submit" class="btn btn-default">{{ button_label }}</button>
     </div>
   </div>
 </form>
