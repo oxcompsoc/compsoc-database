@@ -8,6 +8,7 @@ import net.compsoc.ox.database.iface.core.InvalidKeyException;
 import net.compsoc.ox.database.iface.core.NotFoundException;
 import net.compsoc.ox.database.iface.events.Event;
 import net.compsoc.ox.database.iface.events.Term;
+import net.compsoc.ox.database.iface.events.Venue;
 import net.compsoc.ox.web.admin.sections.Section;
 import net.compsoc.ox.web.admin.templating.Template;
 import net.compsoc.ox.web.admin.util.FormHandler;
@@ -79,6 +80,7 @@ public class EditEventsSection extends Section {
         builder.put("button_label", "Save");
         
         builder.put("terms", builder.database.events().terms().getTerms());
+        builder.put("venues", builder.database.events().venues().getVenues());
         
         // Put properties
         builder.put("form_year", event.year());
@@ -94,6 +96,9 @@ public class EditEventsSection extends Section {
             builder.put("form_end_timestamp", EventsConstants.DATETIME_FORMAT.format(end));
         
         builder.put("form_facebook_event_id", event.facebookEventID());
+        Venue v = event.venue();
+        if(v != null)
+            builder.put("form_venue", v.slug());
         
         builder.put("form_name", event.title());
         builder.put("form_description", event.description());
@@ -119,6 +124,7 @@ public class EditEventsSection extends Section {
             String endTimestampString = builder.request.getParameter("end_timestamp");
             
             String facebookEventIDString = builder.request.getParameter("facebook_event_id");
+            String venueString = builder.request.getParameter("venue");
             
             String name = builder.request.getParameter("name");
             String description = builder.request.getParameter("description");
@@ -201,6 +207,15 @@ public class EditEventsSection extends Section {
                 }
             }
             
+            Venue venue = null;
+            if (venueString != null && !venueString.isEmpty()) {
+                venue = builder.database.events().venues().getVenueBySlug(venueString);
+                if (venue == null) {
+                    builder.errors().add("Invalid Venue");
+                    builder.put("venue_error", true);
+                }
+            }
+            
             if (builder.errors().isEmpty()) {
                 event.setPrimary(year, term, slug);
                 event.setStartTimestamp(startTimestamp);
@@ -209,11 +224,14 @@ public class EditEventsSection extends Section {
                 if (facebookEventIDString != null)
                     event.setFacebookEventID(facebookEventIDString);
                 
+                // Remove venue if null
+                event.setVenue(venue);
+                
                 if (name != null)
                     event.setTitle(name);
                 
-                if (description != null)
-                    event.setDescription(description);
+                // Remove desctiption iff null
+                event.setDescription(description);
                 
                 builder.messages().add("Successfully Updated Event!");
                 
@@ -230,6 +248,7 @@ public class EditEventsSection extends Section {
                 builder.put("form_end_timestamp", endTimestampString);
                 
                 builder.put("form_facebook_event_id", facebookEventIDString);
+                builder.put("form_venue", venueString);
                 
                 builder.put("form_name", name);
                 builder.put("form_description", description);

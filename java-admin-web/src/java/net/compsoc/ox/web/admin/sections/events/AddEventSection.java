@@ -7,6 +7,7 @@ import java.util.Date;
 
 import net.compsoc.ox.database.iface.events.Event;
 import net.compsoc.ox.database.iface.events.Term;
+import net.compsoc.ox.database.iface.events.Venue;
 import net.compsoc.ox.web.admin.sections.Section;
 import net.compsoc.ox.web.admin.templating.Template;
 import net.compsoc.ox.web.admin.util.FormHandler;
@@ -38,6 +39,7 @@ public class AddEventSection extends Section {
             return;
         
         builder.put("terms", builder.database.events().terms().getTerms());
+        builder.put("venues", builder.database.events().venues().getVenues());
         
         builder.render(Template.EVENTS_EDIT);
     }
@@ -61,6 +63,7 @@ public class AddEventSection extends Section {
             String endTimestampString = builder.request.getParameter("end_timestamp");
             
             String facebookEventIDString = builder.request.getParameter("facebook_event_id");
+            String venueString = builder.request.getParameter("venue");
             
             String name = builder.request.getParameter("name");
             String description = builder.request.getParameter("description");
@@ -143,6 +146,15 @@ public class AddEventSection extends Section {
                 }
             }
             
+            Venue venue = null;
+            if (venueString != null && !venueString.isEmpty()) {
+                venue = builder.database.events().venues().getVenueBySlug(venueString);
+                if (venue == null) {
+                    builder.errors().add("Invalid Venue");
+                    builder.put("venue_error", true);
+                }
+            }
+            
             if (builder.errors().isEmpty()) {
                 Event e = builder.database.events().addEvent(year, term, slug);
                 e.setStartTimestamp(startTimestamp);
@@ -151,11 +163,14 @@ public class AddEventSection extends Section {
                 if (facebookEventIDString != null)
                     e.setFacebookEventID(facebookEventIDString);
                 
+                // Remove venue if null
+                e.setVenue(venue);
+                
                 if (name != null)
                     e.setTitle(name);
                 
-                if (description != null)
-                    e.setDescription(description);
+                // Remove desctiption iff null
+                e.setDescription(description);
                 
                 String msg =
                     String.format("Successfully Added Event! "
@@ -174,6 +189,7 @@ public class AddEventSection extends Section {
                 builder.put("form_end_timestamp", endTimestampString);
                 
                 builder.put("form_facebook_event_id", facebookEventIDString);
+                builder.put("form_venue", venueString);
                 
                 builder.put("form_name", name);
                 builder.put("form_description", description);

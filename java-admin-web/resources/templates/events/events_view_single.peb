@@ -42,7 +42,7 @@
       <label class="col-sm-2 control-label">Venue:</label>
       <div class="col-sm-10 control-label" style="text-align: left;">
         {% if event.venue is not null %}
-          {{ venue.name }}
+          {{ event.venue.name }}
         {% else %}
           No Venue
         {% endif %}

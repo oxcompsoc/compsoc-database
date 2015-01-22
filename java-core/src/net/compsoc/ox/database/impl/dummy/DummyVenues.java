@@ -1,6 +1,8 @@
 package net.compsoc.ox.database.impl.dummy;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import net.compsoc.ox.database.iface.events.Venue;
@@ -8,7 +10,26 @@ import net.compsoc.ox.database.iface.events.Venues;
 
 public class DummyVenues implements Venues {
     
-    private final Map<String, DummyVenue> venues = new HashMap<>();
+    private final Map<String, DummyVenue> venues = new LinkedHashMap<>();
+    
+    {
+        DummyVenue v;
+        
+        v = new DummyVenue();
+        v.name = "Venue 1";
+        v.slug = "venue_1";
+        venues.put(v.slug, v);
+        
+        v = new DummyVenue();
+        v.name = "Venue 2";
+        v.slug = "venue_2";
+        venues.put(v.slug, v);
+        
+        v = new DummyVenue();
+        v.name = "Venue 3";
+        v.slug = "venue_3";
+        venues.put(v.slug, v);
+    }
     
     @Override
     public DummyVenue getVenueBySlug(String slug){
@@ -30,6 +51,13 @@ public class DummyVenues implements Venues {
             return slug;
         }
         
+    }
+
+    @Override
+    public List<Venue> getVenues() {
+        List<Venue> venues = new LinkedList<>();
+        venues.addAll(this.venues.values());
+        return venues;
     }
     
 }

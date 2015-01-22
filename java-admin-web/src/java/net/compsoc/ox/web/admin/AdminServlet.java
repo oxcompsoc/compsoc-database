@@ -51,6 +51,9 @@ public class AdminServlet extends HttpServlet {
             response.setHeader("Location", e.location);
         } catch (StatusException e) {
             response.sendError(e.code);
+        } catch (Exception e){
+            e.printStackTrace();
+            throw e;
         }
         
     }

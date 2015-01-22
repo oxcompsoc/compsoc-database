@@ -45,6 +45,16 @@
       {% endif %}
     </label>
   </div>
+  <div class="form-group{% if venue_error %} has-error{% endif %}">
+    <label for="name" class="col-sm-2 control-label">Venue</label>
+    <div class="col-sm-10">
+      <select class="form-control" id="venue" name="venue" placeholder="Term">
+        {% for venue in venues %}
+          <option value="{{ venue.slug }}"{% if venue.slug == form_venue %} selected{% endif %}>{{ venue.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
   <div class="form-group{% if name_error %} has-error{% endif %}">
     <label for="name" class="col-sm-2 control-label">Event Name</label>
     <div class="col-sm-10">
