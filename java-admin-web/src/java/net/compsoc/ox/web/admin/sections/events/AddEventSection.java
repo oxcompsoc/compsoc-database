@@ -158,13 +158,13 @@ public class AddEventSection extends Section {
                 e.setStartTimestamp(startTimestamp);
                 e.setEndTimestamp(endTimestamp);
                 
-                if (facebookEventIDString != null)
+                if (facebookEventIDString != null && !facebookEventIDString.isEmpty())
                     e.setFacebookEventID(facebookEventIDString);
                 
                 // Remove venue if null
                 e.setVenue(venue);
                 
-                if (name != null)
+                if (name != null && !name.isEmpty())
                     e.setTitle(name);
                 
                 // Remove desctiption iff null

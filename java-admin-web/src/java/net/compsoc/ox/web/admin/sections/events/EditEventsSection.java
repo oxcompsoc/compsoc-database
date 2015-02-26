@@ -249,14 +249,18 @@ public class EditEventsSection extends Section {
                 event.setStartTimestamp(startTimestamp);
                 event.setEndTimestamp(endTimestamp);
                 
-                if (facebookEventIDString != null)
+                if (facebookEventIDString != null && !facebookEventIDString.isEmpty())
                     event.setFacebookEventID(facebookEventIDString);
+                else
+                    event.setFacebookEventID(null);
                 
                 // Remove venue if null
                 event.setVenue(venue);
                 
-                if (name != null)
+                if (name != null && !name.isEmpty())
                     event.setTitle(name);
+                else
+                    event.setTitle(null);
                 
                 // Remove desctiption iff null
                 event.setDescription(description);
