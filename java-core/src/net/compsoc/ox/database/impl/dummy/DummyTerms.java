@@ -3,9 +3,9 @@ package net.compsoc.ox.database.impl.dummy;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -23,17 +23,17 @@ public class DummyTerms implements Terms {
         DummyTerm m = new DummyTerm();
         m.name = "Michaelmas";
         m.slug = "michaelmas";
-        terms.put("michaelmas", m);
+        terms.put(m.slug, m);
         
         DummyTerm h = new DummyTerm();
         h.name = "Hilary";
         h.slug = "hilary";
-        terms.put("hilary", h);
+        terms.put(h.slug, h);
         
         DummyTerm t = new DummyTerm();
         t.name = "Trinity";
         t.slug = "trinity";
-        terms.put("trinity", t);
+        terms.put(t.slug, t);
         
         termDates = new DummyTermDates(m, h, t);
     }
@@ -62,11 +62,7 @@ public class DummyTerms implements Terms {
     
     @Override
     public List<Term> getTerms() {
-        List<Term> ts = new LinkedList<>();
-        for (Term t : terms.values()) {
-            ts.add(t);
-        }
-        return ts;
+        return new ArrayList<Term>(terms.values());
     }
     
     @Override
@@ -103,7 +99,7 @@ public class DummyTerms implements Terms {
                 map2016.put(michaelmas, FORMAT.parse("2016-10-10"));
                 termDates.put(2016, map2016);
             } catch (ParseException e) {
-                throw new InternalError(e);
+                throw new RuntimeException(e);
             }
         }
         

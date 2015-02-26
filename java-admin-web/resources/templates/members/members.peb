@@ -1,0 +1,6 @@
+{% extends "page.peb" %}
+
+{% block content %}
+  <p>Not yet implemented</p>
+
+{% endblock %}

@@ -11,6 +11,8 @@ public interface Events{
     
     public Venues venues();
     
+    public Tags tags();
+    
     public List<Event> getEvents();
     
     public Event getEvent(String key) throws NotFoundException, InvalidKeyException;

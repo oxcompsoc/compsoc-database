@@ -14,6 +14,7 @@ import net.compsoc.ox.database.iface.core.InvalidKeyException;
 import net.compsoc.ox.database.iface.core.NotFoundException;
 import net.compsoc.ox.database.iface.events.Event;
 import net.compsoc.ox.database.iface.events.Events;
+import net.compsoc.ox.database.iface.events.Tags;
 import net.compsoc.ox.database.iface.events.Term;
 import net.compsoc.ox.database.iface.events.Terms;
 import net.compsoc.ox.database.iface.events.Venues;
@@ -27,6 +28,7 @@ public class DummyEvents extends DummyDatabaseObject implements Events {
     
     private DummyVenues venues; // Lazily Instantiated
     private DummyTerms terms; // Lazily Instantiated
+    private DummyTags tags; // Lazily Instantiated
     
     protected DummyEvents(DummyDatabase db) {
         super(db);
@@ -97,6 +99,13 @@ public class DummyEvents extends DummyDatabaseObject implements Events {
             throw new NotFoundException();
         else
             return e;
+    }
+
+    @Override
+    public Tags tags() {
+        if (tags == null)
+            tags = new DummyTags();
+        return tags;
     }
     
 }

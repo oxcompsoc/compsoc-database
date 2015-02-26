@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import net.compsoc.ox.web.admin.sections.MainSectionsEnum;
 import net.compsoc.ox.web.admin.sections.Section;
+import net.compsoc.ox.web.admin.sections.events.config.EventsConfigSection;
 import net.compsoc.ox.web.admin.templating.Template;
 import net.compsoc.ox.web.admin.util.PageBuilder;
 import net.compsoc.ox.web.admin.util.PathInfo;
@@ -14,6 +15,7 @@ public class EventsSection extends Section {
     private final Section addSection = new AddEventSection();
     private final Section viewSection = new ViewEventsSection();
     private final Section editSection = new EditEventsSection();
+    private final Section configSection = new EventsConfigSection();
 
     @Override
     public void visitSection(PathInfo info, PageBuilder builder) throws StatusException {
@@ -22,7 +24,7 @@ public class EventsSection extends Section {
 
     @Override
     public void renderPage(PathInfo info, PageBuilder builder) throws IOException, StatusException {
-        builder.put("title", "events");
+        builder.put("title", MainSectionsEnum.EVENTS.label);
         
         builder.put("events", builder.database.events().getEvents());
         
@@ -38,6 +40,8 @@ public class EventsSection extends Section {
                 return viewSection;
             case "edit":
                 return editSection;
+            case "config":
+                return configSection;
         }
         return null;
     }

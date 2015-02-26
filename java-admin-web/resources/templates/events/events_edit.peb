@@ -48,7 +48,7 @@
   <div class="form-group{% if venue_error %} has-error{% endif %}">
     <label for="name" class="col-sm-2 control-label">Venue</label>
     <div class="col-sm-10">
-      <select class="form-control" id="venue" name="venue" placeholder="Term">
+      <select class="form-control combobox" id="venue" name="venue" placeholder="Term">
         {% for venue in venues %}
           <option value="{{ venue.slug }}"{% if venue.slug == form_venue %} selected{% endif %}>{{ venue.name }}</option>
         {% endfor %}
@@ -59,6 +59,13 @@
     <label for="name" class="col-sm-2 control-label">Event Name</label>
     <div class="col-sm-10">
       <input type="text" class="form-control" id="name" name="name" placeholder="(e.g. Geek Night 0)" value="{{ form_name }}">
+    </div>
+  </div>
+  <div class="form-group{% if tags_error %} has-error{% endif %}">
+    <label for="name" class="col-sm-2 control-label">Event Tags</label>
+    <div class="col-sm-10">
+      <input id="tags_text" type="text" class="form-control" id="tags" name="tags" placeholder="Comma separated tags (e.g: talk,geek_night)" value="{{ form_tags }}">
+      <div id="tags_multi_select"></div>
     </div>
   </div>
   <div class="form-group{% if description_error %} has-error{% endif %}">
@@ -73,5 +80,51 @@
     </div>
   </div>
 </form>
+
+<script>
+// TAGS CODE
+$(function() {
+
+    var ms = $('#tags_multi_select').magicSuggest({
+        allowFreeEntries: false,
+  		allowDuplicates: false,
+    	data: [
+    	{% for tag in available_event_tags %}
+    	  { slug: "{{ tag.slug }}", name: "{{ tag.name }}" },
+    	{% endfor %}
+    	],
+    	selectionRenderer: function(data){
+            return data.name;
+        },
+        renderer: function(data){
+            return data.name;
+        },
+        valueField: 'slug'
+    });
+    
+    // Initialise Tags
+    init_tags = $("#tags_text").hide().val().split(",");
+    for (var i = 0; i < init_tags.length; i++) {
+        if (init_tags[i] == "") {         
+            init_tags.splice(i, 1);
+            i--;
+        }
+    }
+	ms.setValue(init_tags);
+	
+    
+    $(ms).on("selectionchange", function(e, m, records){
+    
+        var tags = [],
+        	i;
+        for(i = 0; i < records.length; i++){
+        	if(tags.indexOf(records[i].slug) == -1)
+        		tags.push(records[i].slug)
+        }
+        
+        $("#tags_text").val(tags.join(","))
+    });
+});
+</script>
   
 {% endblock %}

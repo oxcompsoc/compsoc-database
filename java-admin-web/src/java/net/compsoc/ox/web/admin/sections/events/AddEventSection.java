@@ -18,8 +18,6 @@ import net.compsoc.ox.web.admin.util.StatusException;
 
 public class AddEventSection extends Section {
     
-    
-    
     @Override
     public void visitSection(PathInfo info, PageBuilder builder) throws StatusException {
     }

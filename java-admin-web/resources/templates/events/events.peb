@@ -3,6 +3,7 @@
 {% block content %}
   <div class="toolbar">
     <a href="add/" class="btn btn-primary btn-sm pull-right">Add</a>
+    <a href="config/" class="btn btn-default btn-sm pull-right" style="margin-right: 10px">Configuration</a>
     <h3> Events </h3>
   </div>
 

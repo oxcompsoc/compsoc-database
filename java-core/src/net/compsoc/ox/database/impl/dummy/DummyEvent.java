@@ -1,8 +1,11 @@
 package net.compsoc.ox.database.impl.dummy;
 
 import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import net.compsoc.ox.database.iface.events.Event;
+import net.compsoc.ox.database.iface.events.Tag;
 import net.compsoc.ox.database.iface.events.Term;
 import net.compsoc.ox.database.iface.events.Venue;
 import net.compsoc.ox.database.util.TermDatesUtil;
@@ -18,6 +21,7 @@ public class DummyEvent extends DummyDatabaseObject implements Event {
     private String description;
     private String facebookEventID;
     private String venueSlug;
+    private final Set<String> tagSlugs;
     private Date startTimestamp;
     private Date endTimestamp;
     
@@ -27,6 +31,7 @@ public class DummyEvent extends DummyDatabaseObject implements Event {
         this.year = year;
         this.termSlug = term.slug();
         this.slug = slug;
+        this.tagSlugs = new LinkedHashSet<>();
     }
 
     @Override
@@ -123,6 +128,21 @@ public class DummyEvent extends DummyDatabaseObject implements Event {
         Term t = db.events().terms().getTermBySlug(termSlug);
         Date monWK1 = db.events().terms().termDates().getWeek1Date(year, t);
         return TermDatesUtil.getTermWeek(monWK1, startTimestamp);
+    }
+
+    @Override
+    public Set<Tag> tags() {
+        Set<Tag> tags = new LinkedHashSet<>();
+        for(String tagSlug : this.tagSlugs)
+            tags.add(db.events().tags().getTagBySlug(tagSlug));
+        return tags;
+    }
+
+    @Override
+    public void setTags(Set<Tag> tags) {
+        tagSlugs.clear();
+        for(Tag tag : tags)
+            tagSlugs.add(tag.slug());
     }
     
 }

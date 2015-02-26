@@ -24,7 +24,7 @@ public class RootSection extends Section {
     public void renderPage(PathInfo info, PageBuilder builder) throws IOException {
         builder.setActivePage(MainSectionsEnum.HOME);
         
-        builder.put("title", "home");
+        builder.put("title", "CompSoc Admin Panel");
         
         builder.render(Template.HOME);
     }

@@ -1,25 +1,23 @@
-package net.compsoc.ox.web.admin.sections.members;
+package net.compsoc.ox.web.admin.sections.events.config;
 
 import java.io.IOException;
 
-import net.compsoc.ox.web.admin.sections.MainSectionsEnum;
 import net.compsoc.ox.web.admin.sections.Section;
 import net.compsoc.ox.web.admin.templating.Template;
 import net.compsoc.ox.web.admin.util.PageBuilder;
 import net.compsoc.ox.web.admin.util.PathInfo;
 import net.compsoc.ox.web.admin.util.StatusException;
 
-public class MembersSection extends Section {
+public class EventsConfigSection extends Section {
 
     @Override
     public void visitSection(PathInfo info, PageBuilder builder) throws StatusException {
-        builder.setActivePage(MainSectionsEnum.MEMBERS);
     }
 
     @Override
     public void renderPage(PathInfo info, PageBuilder builder) throws IOException, StatusException {
-        builder.put("title", MainSectionsEnum.MEMBERS.label);
-        builder.render(Template.MEMBERS);
+        builder.put("title", "Events Config");
+        builder.render(Template.EVENTS_CONFIG);
     }
 
     @Override

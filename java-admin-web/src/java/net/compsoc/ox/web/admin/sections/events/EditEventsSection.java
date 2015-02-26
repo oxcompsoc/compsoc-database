@@ -3,10 +3,13 @@ package net.compsoc.ox.web.admin.sections.events;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import net.compsoc.ox.database.iface.core.InvalidKeyException;
 import net.compsoc.ox.database.iface.core.NotFoundException;
 import net.compsoc.ox.database.iface.events.Event;
+import net.compsoc.ox.database.iface.events.Tag;
 import net.compsoc.ox.database.iface.events.Term;
 import net.compsoc.ox.database.iface.events.Venue;
 import net.compsoc.ox.web.admin.sections.Section;
@@ -53,6 +56,9 @@ public class EditEventsSection extends Section {
             } catch (InvalidKeyException | NotFoundException ev) {
                 throw StatusException.do404();
             }
+            
+            // Load tags
+            builder.put("available_event_tags", builder.database.events().tags().getTags());
             
             fillFormWithData(builder, event);
             
@@ -102,6 +108,13 @@ public class EditEventsSection extends Section {
         
         builder.put("form_name", event.title());
         builder.put("form_description", event.description());
+        
+        StringBuilder tagsSB = new StringBuilder();
+        for(Tag tag : event.tags()){
+            tagsSB.append(tag.slug());
+            tagsSB.append(',');
+        }
+        builder.put("form_tags", tagsSB.toString());
     }
     
     private static class EditEventFormHandler extends FormHandler {
@@ -127,6 +140,7 @@ public class EditEventsSection extends Section {
             String venueString = builder.request.getParameter("venue");
             
             String name = builder.request.getParameter("name");
+            String tagsString = builder.request.getParameter("tags");
             String description = builder.request.getParameter("description");
             
             int year = 0;
@@ -216,6 +230,20 @@ public class EditEventsSection extends Section {
                 }
             }
             
+            Set<Tag> tags = new HashSet<>();
+            if(tagsString != null && !tagsString.isEmpty()){
+                String[] tagSlugs = tagsString.split(",");
+                for(String tagSlug : tagSlugs){
+                    Tag tag = builder.database.events().tags().getTagBySlug(tagSlug);
+                    if(tag == null){
+                        builder.errors().add(String.format("The tag %s does not exist", tagSlug));
+                        builder.put("tags_error", true);
+                    } else {
+                        tags.add(tag);
+                    }
+                }
+            }
+            
             if (builder.errors().isEmpty()) {
                 event.setPrimary(year, term, slug);
                 event.setStartTimestamp(startTimestamp);
@@ -232,6 +260,8 @@ public class EditEventsSection extends Section {
                 
                 // Remove desctiption iff null
                 event.setDescription(description);
+                
+                event.setTags(tags);
                 
                 builder.messages().add("Successfully Updated Event!");
                 
@@ -251,6 +281,7 @@ public class EditEventsSection extends Section {
                 builder.put("form_venue", venueString);
                 
                 builder.put("form_name", name);
+                builder.put("form_tags", tagsString);
                 builder.put("form_description", description);
             }
             

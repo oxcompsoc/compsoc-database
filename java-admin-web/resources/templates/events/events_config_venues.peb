@@ -1,0 +1,15 @@
+{% extends "page.peb" %}
+
+{% block content %}
+  <div class="toolbar">
+    <h3>{{ title }}</h3>
+  </div>
+  
+  <h2>
+    <a href="venues/">Venues</a>
+  </h2>
+  <p>
+    Manage the different venues that can be used in events.
+  </p>
+  
+{% endblock %}
