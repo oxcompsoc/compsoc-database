@@ -27,6 +27,8 @@ public class PageBuilder {
     public final HttpServletRequest request;
     public final HttpServletResponse response;
     
+    private String overriddenNonce;
+    
     public PageBuilder(PageRenderer renderer, Database database, HttpServletRequest request,
         HttpServletResponse response) {
         this.renderer = renderer;
@@ -72,6 +74,14 @@ public class PageBuilder {
             put("errors", errors);
         }
         return errors;
+    }
+    
+    protected void overrideNonce(String newNonce){
+        overriddenNonce = newNonce;
+    }
+    
+    protected String getOverriddenNonce(){
+        return overriddenNonce;
     }
     
 }

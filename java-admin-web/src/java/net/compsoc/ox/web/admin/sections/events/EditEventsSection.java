@@ -11,6 +11,7 @@ import net.compsoc.ox.database.iface.events.Term;
 import net.compsoc.ox.database.iface.events.Venue;
 import net.compsoc.ox.web.admin.sections.Section;
 import net.compsoc.ox.web.admin.templating.Template;
+import net.compsoc.ox.web.admin.util.NonceManager;
 import net.compsoc.ox.web.admin.util.PageBuilder;
 import net.compsoc.ox.web.admin.util.PathInfo;
 import net.compsoc.ox.web.admin.util.RedirectException;
@@ -59,6 +60,7 @@ public class EditEventsSection extends Section {
             if (new EditEventFormHandler(event).handle(builder))
                 return;
             
+            NonceManager.setupNonce(builder);
             builder.render(Template.EVENTS_EDIT);
         }
         

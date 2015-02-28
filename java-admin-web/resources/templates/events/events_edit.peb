@@ -8,6 +8,7 @@
   {% include "util/messages.peb" %}
   
   <form action="" method="POST" class="form-horizontal">
+  	<input type="hidden" name="nonce" value="{{ nonce }}" />
     <div class="form-group">
       <label for="year" class="col-sm-2 control-label{% if year_error == true or term_error == true or slug_error == true %} has-error{% endif %}">Term &amp; Event ID</label>
       <div class="col-sm-2{% if year_error %} has-error{% endif %}">

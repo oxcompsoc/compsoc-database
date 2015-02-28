@@ -8,6 +8,7 @@ import net.compsoc.ox.database.iface.events.Event;
 import net.compsoc.ox.database.iface.events.Term;
 import net.compsoc.ox.web.admin.sections.Section;
 import net.compsoc.ox.web.admin.templating.Template;
+import net.compsoc.ox.web.admin.util.NonceManager;
 import net.compsoc.ox.web.admin.util.PageBuilder;
 import net.compsoc.ox.web.admin.util.PathInfo;
 import net.compsoc.ox.web.admin.util.RedirectException;
@@ -35,7 +36,8 @@ public class AddEventSection extends Section {
         builder.put("terms", builder.database.events().terms().getTerms());
         builder.put("venues", builder.database.events().venues().getVenues());
         builder.put("available_event_tags", builder.database.events().tags().getTags());
-        
+
+        NonceManager.setupNonce(builder);
         builder.render(Template.EVENTS_EDIT);
     }
     

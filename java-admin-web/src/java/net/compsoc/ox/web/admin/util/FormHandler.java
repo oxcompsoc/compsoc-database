@@ -8,9 +8,17 @@ public abstract class FormHandler {
      * @throws RedirectException
      */
     public boolean handle(PageBuilder builder) throws RedirectException {
-        if (builder.request.getMethod().equals("POST"))
+        if (!builder.request.getMethod().equals("POST"))
+            return false;
+        
+        // Check nonce
+        if (NonceManager.verifyNonce(builder)) {
             return doPostRequest(builder);
-        return false;
+        } else {
+            builder.errors().add("Invalid Nonce");
+            restoreFormData(builder);
+            return false;
+        }
     }
     
     /**
