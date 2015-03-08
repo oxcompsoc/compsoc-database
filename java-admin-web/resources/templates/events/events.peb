@@ -15,7 +15,8 @@
       <th>Start</th>
       <th>End</th>
     </tr>
-    {% for event in events %}
+    {% for event_wrapper in events %}
+      {% set event = event_wrapper.item %}
       {% if current_term != event.term or not same(current_year, event.year) %}
         {% set current_term = event.term %}
         {% set current_year = event.year %}
@@ -32,7 +33,7 @@
           <strong>{{ event.startTimestamp | day_of_week }}</strong> - {{ event.startTimestamp | long_date }}
         </td>
         <td>
-          <a href="view/{{ event.keyString }}/">{{ event.title is not null ? event.title : "&lt;NO NAME&gt;" }}</a>
+          <a href="view/{{ event_wrapper.keyString }}/">{{ event.title is not null ? event.title : "&lt;NO NAME&gt;" }}</a>
         </td>
         <td>
         (<a class="text-muted" href="http://ox.compsoc.net/events/{{ event.year }}/{{ event.term.slug }}/{{ event.slug }}/" target="_blank">View on Website</a>)

@@ -43,6 +43,13 @@
           <li role="presentation"{% if item == active_page %} class="active"{% endif %}><a href="{{ admin_root }}{{ item.path }}">{{ item.label }}</a></li>
         {% endfor %}
       </ul>
+      {% if not breadcrumbs.isEmpty %}
+        <ol class="breadcrumb">
+          {% for breadcrumb in breadcrumbs %}
+            <li><a href="{{ admin_root }}{{ breadcrumb.path }}"{% if breadcrumb.active %} class="active"{% else %}{% endif %}>{{ breadcrumb.label }}</a></li>
+          {% endfor %}
+        </ol>
+      {% endif %}
       {% block content %}{% endblock %}
     </div>
     <div id="footer">

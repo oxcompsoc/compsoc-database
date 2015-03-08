@@ -51,7 +51,7 @@
     <div class="col-sm-10">
       <select class="form-control combobox" id="venue" name="venue" placeholder="Term">
         {% for venue in venues %}
-          <option value="{{ venue.slug }}"{% if venue.slug == form_venue %} selected{% endif %}>{{ venue.name }}</option>
+          <option value="{{ venue.keyString }}"{% if venue.keyString == form_venue %} selected{% endif %}>{{ venue.item.name }}</option>
         {% endfor %}
       </select>
     </div>

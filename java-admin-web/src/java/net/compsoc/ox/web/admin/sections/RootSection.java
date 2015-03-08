@@ -16,8 +16,6 @@ public class RootSection extends Section {
 
     @Override
     public void visitSection(PathInfo info, PageBuilder builder) {
-        // TODO Auto-generated method stub
-        
     }
 
     @Override

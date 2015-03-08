@@ -20,6 +20,7 @@ public class PageBuilder {
     
     private final PageRenderer renderer;
     private final Map<String, Object> context = new HashMap<>();
+    private final List<Breadcrumb> breadcrumbs = new LinkedList<>();
     private List<String> messages;
     private List<String> errors;
     
@@ -41,6 +42,10 @@ public class PageBuilder {
         context.put(key, value);
     }
     
+    public void addBreadcrumb(String label, String path){
+        breadcrumbs.add(new Breadcrumb(label, path));
+    }
+    
     public void setActivePage(MainSectionsEnum section) {
         put("active_page", section);
     }
@@ -53,6 +58,7 @@ public class PageBuilder {
             put("static_href", request.getContextPath() + "/static");
             put("admin_root", request.getContextPath());
             put("main_menu_items", MainSectionsEnum.values());
+            put("breadcrumbs", breadcrumbs);
             
             renderer.render(template, context, response.getWriter());
         } catch (PebbleException e) {
@@ -82,6 +88,23 @@ public class PageBuilder {
     
     protected String getOverriddenNonce(){
         return overriddenNonce;
+    }
+
+    @SuppressWarnings("unused")
+    private class Breadcrumb {
+        
+        public final String label;
+        public final String path;
+        
+        public Breadcrumb(String label, String path){
+            this.label = label;
+            this.path = path;
+        }
+        
+        public boolean active(){
+            return breadcrumbs.get(breadcrumbs.size() - 1) == this;
+        }
+        
     }
     
 }

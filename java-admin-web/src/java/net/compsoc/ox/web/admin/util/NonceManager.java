@@ -4,7 +4,6 @@ import java.util.Random;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * Manages nonces for use in forms, which protect against XSS attacks and

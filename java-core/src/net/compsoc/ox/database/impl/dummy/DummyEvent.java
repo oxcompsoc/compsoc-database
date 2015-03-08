@@ -10,7 +10,7 @@ import net.compsoc.ox.database.iface.events.Term;
 import net.compsoc.ox.database.iface.events.Venue;
 import net.compsoc.ox.database.util.TermDatesUtil;
 
-public class DummyEvent extends DummyDatabaseObject implements Event {
+public class DummyEvent extends DummyDatabaseObject implements Event<Integer, Integer> {
     
     private final int key;
     
@@ -20,7 +20,7 @@ public class DummyEvent extends DummyDatabaseObject implements Event {
     private String title;
     private String description;
     private String facebookEventID;
-    private String venueSlug;
+    private Integer venueKey;
     private final Set<String> tagSlugs;
     private Date startTimestamp;
     private Date endTimestamp;
@@ -32,6 +32,11 @@ public class DummyEvent extends DummyDatabaseObject implements Event {
         this.termSlug = term.slug();
         this.slug = slug;
         this.tagSlugs = new LinkedHashSet<>();
+    }
+
+    @Override
+    public Integer key() {
+        return key;
     }
 
     @Override
@@ -65,8 +70,8 @@ public class DummyEvent extends DummyDatabaseObject implements Event {
     }
 
     @Override
-    public Venue venue() {
-        return venueSlug == null ? null : db.events().venues().getVenueBySlug(venueSlug);
+    public Venue<Integer> venue() {
+        return venueKey == null ? null : db.events().venues().getVenueByKey(venueKey);
     }
 
     @Override
@@ -77,11 +82,6 @@ public class DummyEvent extends DummyDatabaseObject implements Event {
     @Override
     public Date endTimestamp() {
         return endTimestamp;
-    }
-
-    @Override
-    public String keyString() {
-        return Integer.toString(key);
     }
 
     @Override
@@ -107,8 +107,8 @@ public class DummyEvent extends DummyDatabaseObject implements Event {
     }
 
     @Override
-    public void setVenue(Venue venue) {
-        this.venueSlug = venue.slug();
+    public void setVenue(Venue<Integer> venue) {
+        this.venueKey = venue.key();
     }
 
     @Override

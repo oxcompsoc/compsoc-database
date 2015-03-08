@@ -9,9 +9,13 @@ import net.compsoc.ox.web.admin.util.PathInfo;
 import net.compsoc.ox.web.admin.util.StatusException;
 
 public class EventsConfigSection extends Section {
+    
+    private final Section venuesSection = new EventsConfigVenuesSection();
+    private final Section tagsSection = new EventsConfigTagsSection();
 
     @Override
     public void visitSection(PathInfo info, PageBuilder builder) throws StatusException {
+        builder.addBreadcrumb("Config", "/events/config/");
     }
 
     @Override
@@ -22,7 +26,14 @@ public class EventsConfigSection extends Section {
 
     @Override
     public Section getSubsection(String slug) {
-        return null;
+        switch(slug){
+            case "venues":
+                return venuesSection;
+            case "tags":
+                return tagsSection;
+            default:
+                return null;
+        }
     }
     
 }

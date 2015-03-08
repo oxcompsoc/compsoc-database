@@ -6,6 +6,7 @@ import java.util.Date;
 import net.compsoc.ox.database.iface.core.InvalidKeyException;
 import net.compsoc.ox.database.iface.core.NotFoundException;
 import net.compsoc.ox.database.iface.events.Event;
+import net.compsoc.ox.database.iface.events.Events;
 import net.compsoc.ox.database.iface.events.Tag;
 import net.compsoc.ox.database.iface.events.Term;
 import net.compsoc.ox.database.iface.events.Venue;
@@ -16,13 +17,16 @@ import net.compsoc.ox.web.admin.util.PageBuilder;
 import net.compsoc.ox.web.admin.util.PathInfo;
 import net.compsoc.ox.web.admin.util.RedirectException;
 import net.compsoc.ox.web.admin.util.StatusException;
+import net.compsoc.ox.web.admin.util.database.WrappedIndexedItem;
 
-public class EditEventsSection extends Section {
+public class EditEventSection extends Section {
     
     private final Section EditSingleEventSection = new ViewSingleEventSection();
     
     @Override
-    public void visitSection(PathInfo info, PageBuilder builder) throws StatusException {}
+    public void visitSection(PathInfo info, PageBuilder builder) throws StatusException {
+        builder.addBreadcrumb("Edit Event", "/events/edit/" + info.slug() + "/");
+    }
     
     @Override
     public void renderPage(PathInfo info, PageBuilder builder) throws IOException, StatusException,
@@ -46,18 +50,25 @@ public class EditEventsSection extends Section {
         public void renderPage(PathInfo info, PageBuilder builder) throws IOException,
             StatusException, RedirectException {
             
+            renderPage(info, builder, builder.database.events());
+        }
+        
+        public <EKey, VKey> void renderPage(PathInfo info, PageBuilder builder,
+            Events<EKey, VKey> events) throws IOException, StatusException, RedirectException {
+            
             // Get Event
-            Event event;
+            Event<EKey, VKey> event;
             try {
-                event = builder.database.events().getEvent(info.slug());
+                EKey eventKey = events.getKeyFactory().fromString(info.slug());
+                event = events.getEvent(eventKey);
             } catch (InvalidKeyException | NotFoundException ev) {
                 throw StatusException.do404();
             }
             
-            fillFormWithData(builder, event);
+            fillFormWithData(builder, events, event);
             
             // Process form data
-            if (new EditEventFormHandler(event).handle(builder))
+            if (new EditEventFormHandler<EKey, VKey>(events, event).handle(builder))
                 return;
             
             NonceManager.setupNonce(builder);
@@ -66,13 +77,13 @@ public class EditEventsSection extends Section {
         
         @Override
         public Section getSubsection(String slug) {
-            // TODO Auto-generated method stub
             return null;
         }
         
     }
     
-    private static void fillFormWithData(PageBuilder builder, Event event) {
+    private static <EKey, VKey> void fillFormWithData(PageBuilder builder,
+        Events<EKey, VKey> events, Event<EKey, VKey> event) {
         if (event.title() != null)
             builder.put("title", "Edit Event: " + event.title());
         else
@@ -80,9 +91,10 @@ public class EditEventsSection extends Section {
         
         builder.put("button_label", "Save");
         
-        builder.put("terms", builder.database.events().terms().getTerms());
-        builder.put("venues", builder.database.events().venues().getVenues());
-        builder.put("available_event_tags", builder.database.events().tags().getTags());
+        builder.put("terms", events.terms().getTerms());
+        builder.put("venues", WrappedIndexedItem.wrappedIndexedItemList(events.venues()
+            .getKeyFactory(), events.venues().getVenues()));
+        builder.put("available_event_tags", events.tags().getTags());
         
         // Put properties
         builder.put("form_year", event.year());
@@ -98,9 +110,9 @@ public class EditEventsSection extends Section {
             builder.put("form_end_timestamp", EventsConstants.DATETIME_FORMAT.format(end));
         
         builder.put("form_facebook_event_id", event.facebookEventID());
-        Venue v = event.venue();
+        Venue<VKey> v = event.venue();
         if (v != null)
-            builder.put("form_venue", v.slug());
+            builder.put("form_venue", events.venues().getKeyFactory().toString(v.key()));
         
         builder.put("form_name", event.title());
         builder.put("form_description", event.description());
@@ -113,23 +125,26 @@ public class EditEventsSection extends Section {
         builder.put("form_tags", tagsSB.toString());
     }
     
-    private static class EditEventFormHandler extends EventsAbstractFormHandler {
+    private static class EditEventFormHandler<EKey, VKey> extends
+        EventsAbstractFormHandler<EKey, VKey> {
         
-        public final Event event;
+        public final Event<EKey, VKey> event;
         
-        public EditEventFormHandler(Event event) {
+        public EditEventFormHandler(Events<EKey, VKey> events, Event<EKey, VKey> event) {
+            super(events);
             this.event = event;
         }
         
         @Override
-        public Event getEvent(PageBuilder builder, int year, Term term, String slug) {
+        public Event<EKey, VKey> getEvent(int year, Term term, String slug) {
             event.setPrimary(year, term, slug);
             return event;
         }
-
+        
         @Override
-        public void complete(PageBuilder builder, Event event) throws RedirectException {
-            throw new RedirectException(String.format("../../view/%s/", event.keyString()));
+        public void complete(Event<EKey, VKey> event) throws RedirectException {
+            throw new RedirectException(String.format("../../view/%s/", events.getKeyFactory()
+                .toString(event.key())));
         }
     }
     

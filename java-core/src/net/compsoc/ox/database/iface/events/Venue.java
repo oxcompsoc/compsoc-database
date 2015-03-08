@@ -1,8 +1,11 @@
 package net.compsoc.ox.database.iface.events;
 
-public interface Venue {
+import net.compsoc.ox.database.iface.core.IndexedItem;
+
+public interface Venue<Key> extends IndexedItem<Key> {
     
     public String name();
+    
     public String slug();
     
 }

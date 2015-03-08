@@ -1,4 +1,6 @@
 {% extends "page.peb" %}
+  
+{% set event = event_wrapper.item %}
 
 {% block content %}
   <div class="toolbar">
@@ -7,7 +9,7 @@
         <a href="http://ox.compsoc.net/events/{{ event.year }}/{{ event.term.slug }}/{{ event.slug }}/" target="_blank" class="btn btn-default btn-sm">View on Website</a>
       </div>
       <div class="btn-group" role="group">
-        <a href="../../edit/{{ event.keyString }}/" class="btn btn-primary btn-sm">Edit</a>
+        <a href="../../edit/{{ event_wrapper.keyString }}/" class="btn btn-primary btn-sm">Edit</a>
       </div>
     </div>
     <h3>{{ title }}</h3>

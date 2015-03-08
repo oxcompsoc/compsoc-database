@@ -2,10 +2,16 @@ package net.compsoc.ox.database.iface.events;
 
 import java.util.List;
 
-public interface Venues {
+import net.compsoc.ox.database.iface.core.KeyFactory;
+
+public interface Venues<Key> {
     
-    public Venue getVenueBySlug(String slug);
+    public KeyFactory<Key> getKeyFactory();
     
-    public List<Venue> getVenues();
+    public Venue<Key> getVenueByKey(Key key);
+    
+    //public Venue<Key> getVenueBySlug(String slug);
+    
+    public List<Venue<Key>> getVenues();
     
 }

@@ -5,7 +5,9 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.compsoc.ox.database.iface.core.InvalidKeyException;
 import net.compsoc.ox.database.iface.events.Event;
+import net.compsoc.ox.database.iface.events.Events;
 import net.compsoc.ox.database.iface.events.Tag;
 import net.compsoc.ox.database.iface.events.Term;
 import net.compsoc.ox.database.iface.events.Venue;
@@ -13,16 +15,22 @@ import net.compsoc.ox.web.admin.util.FormHandler;
 import net.compsoc.ox.web.admin.util.PageBuilder;
 import net.compsoc.ox.web.admin.util.RedirectException;
 
-public abstract class EventsAbstractFormHandler extends FormHandler {
+public abstract class EventsAbstractFormHandler<EKey, VKey> extends FormHandler {
+    
+    protected final Events<EKey, VKey> events;
+    
+    public EventsAbstractFormHandler(Events<EKey, VKey> events) {
+        this.events = events;
+    }
     
     /**
      * Get or create the required event, and ensure that the year, term and slug
      * are updated accordingly.
      * 
      */
-    public abstract Event getEvent(PageBuilder builder, int year, Term term, String slug);
+    public abstract Event<EKey, VKey> getEvent(int year, Term term, String slug);
     
-    public abstract void complete(PageBuilder builder, Event event) throws RedirectException;
+    public abstract void complete(Event<EKey, VKey> event) throws RedirectException;
     
     @Override
     public boolean doPostRequest(PageBuilder builder) throws RedirectException {
@@ -120,9 +128,14 @@ public abstract class EventsAbstractFormHandler extends FormHandler {
             }
         }
         
-        Venue venue = null;
+        Venue<VKey> venue = null;
         if (venueString != null && !venueString.isEmpty()) {
-            venue = builder.database.events().venues().getVenueBySlug(venueString);
+            try {
+                VKey venueKey = events.venues().getKeyFactory().fromString(venueString);
+                venue = events.venues().getVenueByKey(venueKey);
+            } catch (InvalidKeyException e) {
+                // Handle with null venue
+            }
             if (venue == null) {
                 builder.errors().add("Invalid Venue");
                 builder.put("venue_error", true);
@@ -145,7 +158,7 @@ public abstract class EventsAbstractFormHandler extends FormHandler {
         
         if (builder.errors().isEmpty()) {
             // Add / Update Event
-            Event event = getEvent(builder, year, term, slug);
+            Event<EKey, VKey> event = getEvent(year, term, slug);
             
             event.setStartTimestamp(startTimestamp);
             event.setEndTimestamp(endTimestamp);
@@ -169,7 +182,7 @@ public abstract class EventsAbstractFormHandler extends FormHandler {
             event.setTags(tags);
             
             // Handle As Appropriate
-            complete(builder, event);
+            complete(event);
         }
         
         // Restore form data if an error exists

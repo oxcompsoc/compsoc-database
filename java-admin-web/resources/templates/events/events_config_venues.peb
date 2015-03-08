@@ -4,12 +4,50 @@
   <div class="toolbar">
     <h3>{{ title }}</h3>
   </div>
-  
-  <h2>
-    <a href="venues/">Venues</a>
-  </h2>
   <p>
-    Manage the different venues that can be used in events.
+    <strong>Add Venue</strong>
   </p>
-  
+  <form action="" method="POST" class="form-horizontal">
+  <div class="form-group">
+    <div class="col-sm-6">
+      <input type="email" class="form-control" name="venue_slug" placeholder="Venue Slug (url safe) - eg: the_thom_building">
+    </div>
+    <div class="col-sm-6">
+      <div class="input-group">
+        <input type="text" class="form-control" name="venue_name" placeholder="Venue Name">
+        <div class="input-group-btn">
+          <button type="submit" value="add_venue" class="btn btn-primary">Add</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  </form>
+  <p>
+    <strong>Existing Venues</strong>
+  </p>
+  <table class="table table-hover">
+    <tr>
+      <th>Slug (url safe)</th>
+      <th>Label</th>
+      <th></th>
+    </tr>
+    {% for venue in venues %}
+      <tr>
+        <form action="" method="POST">
+          <td>
+            <input type="text" class="form-control" name="venue_slug" value="{{ venue.slug }}" />
+          </td>
+          <td>
+            <input type="text" class="form-control" name="venue_name" value="{{ venue.name }}" />
+          </td>
+          <td style="text-align: right">
+            <button type="submit" value="edit_venue" class="btn btn-primary btn-sm">
+              <span class="glyphicon glyphicon-floppy-disk"></span>
+              Save
+            </button>
+          </td>
+        </form>
+      </tr>
+    {% endfor %}
+  </table>
 {% endblock %}

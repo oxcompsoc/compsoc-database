@@ -3,10 +3,9 @@ package net.compsoc.ox.database.iface.events;
 import java.util.Date;
 import java.util.Set;
 
-public interface Event {
-    
-    // Key
-    public String keyString();
+import net.compsoc.ox.database.iface.core.IndexedItem;
+
+public interface Event<Key, VenueKey> extends IndexedItem<Key> {
     
     // Getters
     
@@ -18,7 +17,7 @@ public interface Event {
     public String title();
     public String description();
     public String facebookEventID();
-    public Venue venue();
+    public Venue<VenueKey> venue();
     public Set<Tag> tags();
     
     public Date startTimestamp();
@@ -31,7 +30,7 @@ public interface Event {
     public void setTitle(String title);
     public void setDescription(String description);
     public void setFacebookEventID(String id);
-    public void setVenue(Venue venue);
+    public void setVenue(Venue<VenueKey> venue);
     public void setTags(Set<Tag> tags);
     
     public void setStartTimestamp(Date start);

@@ -20,6 +20,11 @@ body {
 	font-size: 11px;
 }
 
+ol.breadcrumb {
+  margin: 15px 0 0 0;
+  padding: 0 15px;
+}
+
 div.toolbar {
   	background-color: #eee;
   	border: 1px solid #ddd;
