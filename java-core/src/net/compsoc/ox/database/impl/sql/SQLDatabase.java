@@ -12,13 +12,17 @@ public abstract class SQLDatabase extends Database {
     public SQLDatabase() {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
-                System.out.println("Shutting down any SQL Database Connections");
-                if (connection != null)
+                System.out.println("Shutting Down SQL Database...");
+                if (connection != null) {
+                    System.out.println("   ...Closing Connection");
                     try {
                         connection.close();
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
+                } else {
+                    System.out.println("   ...No Connections to Close");
+                }
             }
         });
     }

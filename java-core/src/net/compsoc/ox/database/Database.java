@@ -1,6 +1,6 @@
 package net.compsoc.ox.database;
 
-import net.compsoc.ox.database.config.CompSocConfig;
+import net.compsoc.ox.database.config.CompSocDatabaseConfig;
 import net.compsoc.ox.database.iface.events.Events;
 import net.compsoc.ox.database.impl.dummy.DummyDatabase;
 import net.compsoc.ox.database.impl.sql.PostgresDatabase;
@@ -11,29 +11,25 @@ public abstract class Database {
     
     public abstract Events<?, ?> events();
     
-    public static Database fromConfig(CompSocConfig config) throws DatabaseInitialisationException,
-        ConfigurationException {
-        CompSocConfig.DatabaseConfig dbConf = config.database();
-        if (dbConf == null) {
-            throw new ConfigurationException("Configuration does not include database information");
-        }
+    public static Database fromConfig(CompSocDatabaseConfig config)
+        throws DatabaseInitialisationException, ConfigurationException {
         
-        switch (dbConf.type()) {
+        switch (config.type()) {
             case "dummy":
                 return new DummyDatabase();
             case "postgres":
-                return postgresDatabase(dbConf);
+                return postgresDatabase(config);
             default:
-                throw new ConfigurationException("Invalid Database Type: " + dbConf.type());
+                throw new ConfigurationException("Invalid Database Type: " + config.type());
                 
         }
     }
     
-    private static Database postgresDatabase(CompSocConfig.DatabaseConfig dbConf)
+    private static Database postgresDatabase(CompSocDatabaseConfig config)
         throws DatabaseInitialisationException {
         
-        return new PostgresDatabase(dbConf.host(), dbConf.port(), dbConf.name(), dbConf.username(),
-            dbConf.password());
+        return new PostgresDatabase(config.host(), config.port(), config.name(), config.username(),
+            config.password());
         
     }
     

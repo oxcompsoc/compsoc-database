@@ -2,14 +2,15 @@ package net.compsoc.ox.web.admin;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
 import net.compsoc.ox.database.Database;
-import net.compsoc.ox.database.config.CompSocConfig;
-import net.compsoc.ox.database.config.CompSocYAMLConfig;
 import net.compsoc.ox.database.util.exceptions.ConfigurationException;
 import net.compsoc.ox.database.util.exceptions.DatabaseInitialisationException;
+import net.compsoc.ox.web.admin.config.CompSocAdminConfig;
+import net.compsoc.ox.web.admin.config.CompSocYAMLAdminConfig;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -19,9 +20,20 @@ public class CompSocAdmin {
     
     public static void main(String[] args) throws Exception {
         
-        Database db = getDatabase(args);
-        if (db == null)
+        CompSocAdminConfig config;
+        Database db;
+        
+        try {
+            config = getConfig(args);
+            db = getDatabase(config);
+        } catch (ConfigurationException e) {
+            System.out.print("Could not start, configuration error: ");
+            System.out.println(e.getMessage());
             return;
+        } catch (DatabaseInitialisationException e) {
+            e.printStackTrace();
+            return;
+        }
         
         Server server = new Server(8080);
         
@@ -37,35 +49,32 @@ public class CompSocAdmin {
         server.join();
     }
     
-    private static Database getDatabase(String[] args) {
+    private static CompSocAdminConfig getConfig(String[] args) throws ConfigurationException {
         
-        String configFileLocation = null;
-        if(args.length == 1){
-            configFileLocation = args[0];
+        File configFile = null;
+        if (args.length == 1) {
+            configFile = new File(args[0]);
         } else {
-            System.out.println("No configuration file path specified in command line");
-            return null;
+            throw new ConfigurationException("No configuration file path specified in command line");
         }
         
-        try {
-            return Database.fromConfig(loadConfig(configFileLocation));
-        } catch (ConfigurationException e) {
-            System.out.print("Could not start, configuration error: ");
-            System.out.println(e.getMessage());
-            return null;
-        } catch (DatabaseInitialisationException e) {
-            e.printStackTrace();
-            return null;
+        System.out.println("Using Configuration File: " + configFile.getAbsolutePath());
+        try (InputStream is = new FileInputStream(configFile)) {
+            return CompSocYAMLAdminConfig.load(is);
+        } catch (FileNotFoundException e) {
+            throw new ConfigurationException("config file does not exist: " + configFile);
+        } catch (IOException e) {
+            throw new ConfigurationException("Error reading config file: " + configFile);
         }
     }
     
-    private static CompSocConfig loadConfig(String filePath) throws ConfigurationException {
-        File f = new File(filePath);
-        System.out.println("Using Configuration File: " + f.getAbsolutePath());
-        try (InputStream is = new FileInputStream(f)) {
-            return new CompSocYAMLConfig(is);
-        } catch (IOException e) {
-            throw new ConfigurationException("Error reading config file: " + f);
-        }
+    private static Database getDatabase(CompSocAdminConfig config)
+        throws DatabaseInitialisationException, ConfigurationException {
+        
+        if (config.database() == null)
+            throw new ConfigurationException("No database options specified in config");
+        
+        return Database.fromConfig(config.database());
+        
     }
 }
