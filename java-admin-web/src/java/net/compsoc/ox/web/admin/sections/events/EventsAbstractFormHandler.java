@@ -11,6 +11,7 @@ import net.compsoc.ox.database.iface.events.Events;
 import net.compsoc.ox.database.iface.events.Tag;
 import net.compsoc.ox.database.iface.events.Term;
 import net.compsoc.ox.database.iface.events.Venue;
+import net.compsoc.ox.database.util.RegularExpressions;
 import net.compsoc.ox.web.admin.util.FormHandler;
 import net.compsoc.ox.web.admin.util.PageBuilder;
 import net.compsoc.ox.web.admin.util.RedirectException;
@@ -81,10 +82,8 @@ public abstract class EventsAbstractFormHandler<EKey, VKey> extends FormHandler 
         if (slug == null || slug.isEmpty()) {
             builder.errors().add("No Slug given");
             builder.put("slug_error", true);
-        } else if (!EventsConstants.SLUG_PATTERN.matcher(slug).matches()) {
-            builder.errors().add(
-                "Invalid Slug, please use only lover case letters, numbers, "
-                    + "hyphens and underscores.");
+        } else if (!RegularExpressions.SLUG_REGEX.matcher(slug).matches()) {
+            builder.errors().add(RegularExpressions.SLUG_REGEX_ERROR);
             builder.put("slug_error", true);
         }
         

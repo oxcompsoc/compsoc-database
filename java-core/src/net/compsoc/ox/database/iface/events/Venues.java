@@ -8,10 +8,14 @@ public interface Venues<Key> {
     
     public KeyFactory<Key> getKeyFactory();
     
+    /**
+     * @param key
+     * @return the {@link Venue} or null if none exists with that {@link Key}.
+     */
     public Venue<Key> getVenueByKey(Key key);
     
-    //public Venue<Key> getVenueBySlug(String slug);
-    
     public List<Venue<Key>> getVenues();
+    
+    public void addVenue(String slug, String name);
     
 }

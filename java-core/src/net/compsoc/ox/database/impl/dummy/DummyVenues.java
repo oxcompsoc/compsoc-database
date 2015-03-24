@@ -14,27 +14,28 @@ public class DummyVenues implements Venues<Integer> {
     private static final KeyFactory<Integer> KEY_FACTORY = new KeyFactory.IntegerKeyFactory();
 
     private final Map<Integer, DummyVenue> venues = new LinkedHashMap<>();
+    private int nextKey = 1;
     
     {
         DummyVenue v;
         
         v = new DummyVenue();
-        v.key = 1;
+        v.key = nextKey++;
         v.name = "Venue 1";
         v.slug = "venue_1";
-        venues.put(1, v);
+        venues.put(v.key, v);
         
         v = new DummyVenue();
-        v.key = 2;
+        v.key = nextKey++;
         v.name = "Venue 2";
         v.slug = "venue_2";
-        venues.put(2, v);
+        venues.put(v.key, v);
         
         v = new DummyVenue();
-        v.key = 3;
+        v.key = nextKey++;
         v.name = "Venue 3";
         v.slug = "venue_3";
-        venues.put(3, v);
+        venues.put(v.key, v);
     }
     
     private class DummyVenue implements Venue<Integer> {
@@ -57,6 +58,12 @@ public class DummyVenues implements Venues<Integer> {
         public Integer key() {
             return key;
         }
+
+        @Override
+        public void setSlugAndName(String slug, String name) {
+            this.slug = slug;
+            this.name = name;
+        }
         
     }
 
@@ -75,6 +82,15 @@ public class DummyVenues implements Venues<Integer> {
     @Override
     public Venue<Integer> getVenueByKey(Integer key) {
         return venues.get(key);
+    }
+
+    @Override
+    public void addVenue(String slug, String name) {
+        DummyVenue v = new DummyVenue();
+        v.key = nextKey++;
+        v.name = name;
+        v.slug = slug;
+        venues.put(v.key, v);
     }
     
 }

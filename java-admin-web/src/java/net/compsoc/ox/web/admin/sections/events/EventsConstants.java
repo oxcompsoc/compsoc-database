@@ -7,7 +7,6 @@ import java.util.regex.Pattern;
 
 public class EventsConstants {
     
-    protected static final Pattern SLUG_PATTERN = Pattern.compile("^[a-z0-9\\_\\-]+$");
     protected static final Pattern FACEBOOK_ID_PATTERN = Pattern.compile("^[0-9]+$");
     protected static final DateFormat DATETIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm",
         Locale.ENGLISH);

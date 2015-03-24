@@ -4,23 +4,27 @@
   <div class="toolbar">
     <h3>{{ title }}</h3>
   </div>
+  
+  {% include "util/messages.peb" %}
+  
   <p>
     <strong>Add Venue</strong>
   </p>
   <form action="" method="POST" class="form-horizontal">
-  <div class="form-group">
-    <div class="col-sm-6">
-      <input type="email" class="form-control" name="venue_slug" placeholder="Venue Slug (url safe) - eg: the_thom_building">
-    </div>
-    <div class="col-sm-6">
-      <div class="input-group">
-        <input type="text" class="form-control" name="venue_name" placeholder="Venue Name">
-        <div class="input-group-btn">
-          <button type="submit" value="add_venue" class="btn btn-primary">Add</button>
+  	<input type="hidden" name="nonce" value="{{ nonce }}" />
+    <div class="form-group">
+      <div class="col-sm-6">
+        <input type="text" class="form-control" name="venue_slug" placeholder="Venue Slug (url safe) - eg: the_thom_building">
+      </div>
+      <div class="col-sm-6">
+        <div class="input-group">
+          <input type="text" class="form-control" name="venue_name" placeholder="Venue Name">
+          <div class="input-group-btn">
+            <button type="submit" name="action" value="add_venue" class="btn btn-primary">Add</button>
+          </div>
         </div>
       </div>
     </div>
-  </div>
   </form>
   <p>
     <strong>Existing Venues</strong>
@@ -31,9 +35,12 @@
       <th>Label</th>
       <th></th>
     </tr>
-    {% for venue in venues %}
+    {% for wrapped_venue in venues %}
+      {% set venue = wrapped_venue.item %}
       <tr>
         <form action="" method="POST">
+          <input type="hidden" name="venue" value="{{ wrapped_venue.keyString }}" />
+  	      <input type="hidden" name="nonce" value="{{ nonce }}" />
           <td>
             <input type="text" class="form-control" name="venue_slug" value="{{ venue.slug }}" />
           </td>
@@ -41,7 +48,7 @@
             <input type="text" class="form-control" name="venue_name" value="{{ venue.name }}" />
           </td>
           <td style="text-align: right">
-            <button type="submit" value="edit_venue" class="btn btn-primary btn-sm">
+            <button type="submit" name="action" value="edit_venue" class="btn btn-primary btn-sm">
               <span class="glyphicon glyphicon-floppy-disk"></span>
               Save
             </button>

@@ -13,7 +13,13 @@ public abstract class FormHandler {
         
         // Check nonce
         if (NonceManager.verifyNonce(builder)) {
-            return doPostRequest(builder);
+            try {
+                return doPostRequest(builder);
+            } catch (FormError e) {
+                builder.errors().add(e.getMessage());
+                restoreFormData(builder);
+                return false;
+            }
         } else {
             builder.errors().add("Invalid Nonce");
             restoreFormData(builder);
@@ -26,7 +32,7 @@ public abstract class FormHandler {
      *         response, false otherwise.
      * @throws RedirectException
      */
-    public abstract boolean doPostRequest(PageBuilder builder) throws RedirectException;
+    public abstract boolean doPostRequest(PageBuilder builder) throws RedirectException, FormError;
     
     /**
      * In the event that a form can not be correctly processed, restore the form
@@ -35,5 +41,12 @@ public abstract class FormHandler {
      * @param builder
      */
     public abstract void restoreFormData(PageBuilder builder);
+    
+    public static class FormError extends Exception {
+        
+        public FormError(String message) {
+            super(message);
+        }
+    }
     
 }

@@ -8,4 +8,5 @@ public interface Venue<Key> extends IndexedItem<Key> {
     
     public String slug();
     
+    public void setSlugAndName(String slug, String name);
 }
