@@ -8,7 +8,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.compsoc.ox.database.Database;
-import net.compsoc.ox.database.impl.dummy.DummyDatabase;
+import net.compsoc.ox.database.config.CompSocConfig;
+import net.compsoc.ox.database.config.CompSocYAMLConfig;
+import net.compsoc.ox.database.util.exceptions.ConfigurationException;
+import net.compsoc.ox.database.util.exceptions.DatabaseInitialisationException;
 import net.compsoc.ox.web.admin.sections.RootSection;
 import net.compsoc.ox.web.admin.sections.Section;
 import net.compsoc.ox.web.admin.util.PageBuilder;
@@ -25,7 +28,22 @@ public class AdminServlet extends HttpServlet {
     
     public AdminServlet() {
         // Create Database
-        database = new DummyDatabase();
+        Database database = null;
+        try {
+            database = Database.fromConfig(loadConfig());
+        } catch (ConfigurationException e) {
+            System.out.print("Could not start, configuration error: ");
+            System.out.println(e.getMessage());
+            System.exit(1);
+        } catch (DatabaseInitialisationException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+        this.database = database;
+    }
+    
+    private CompSocConfig loadConfig() throws ConfigurationException {
+        return new CompSocYAMLConfig(null);
     }
     
     @Override
@@ -51,7 +69,7 @@ public class AdminServlet extends HttpServlet {
             response.setHeader("Location", e.location);
         } catch (StatusException e) {
             response.sendError(e.code);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             throw e;
         }
