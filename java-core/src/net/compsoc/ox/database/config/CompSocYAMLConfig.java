@@ -6,39 +6,36 @@ import java.util.Map;
 import net.compsoc.ox.database.util.exceptions.ConfigurationException;
 
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.error.YAMLException;
 
 public class CompSocYAMLConfig extends CompSocConfig {
     
     public CompSocYAMLConfig(InputStream is) throws ConfigurationException {
         Yaml yaml = new Yaml();
         
-        String document = "";
-        document += "database:\n";
-        document += "  type: postgres\n";
-        document += "  host: localhost\n";
-        document += "  port: 60001\n";
-        document += "  user: username\n";
-        document += "  pass: password\n";
-        document += "  name: db_name\n";
-        
-        Object config = yaml.load(document);
-        setupConfig(prepareMap(config, "yaml file"));
+        try {
+            Object config = yaml.load(is);
+            setupConfig(prepareMap(config, "yaml file"));
+        } catch (YAMLException e) {
+            throw new ConfigurationException("Unable to load configuration file: " + e.getMessage());
+        }
         
     }
     
     private void setupConfig(Map<String, Object> config) throws ConfigurationException {
         Object dbConfig = config.get("database");
-        if(dbConfig != null)
+        if (dbConfig != null)
             setupDatabase(prepareMap(dbConfig, "database"));
         
     }
     
     private void setupDatabase(Map<String, Object> config) throws ConfigurationException {
         String type = getValue(config, "type", String.class, "database type");
-        if(type == null){
+        if (type == null) {
             throw new ConfigurationException("database needs a type");
         }
-        this.database = new DatabaseConfig(type){};
+        this.database = new DatabaseConfig(type) {
+        };
         this.database.host = getValue(config, "host", String.class, "database host");
         Integer port = getValue(config, "port", Integer.class, "database port");
         this.database.port = port == null ? -1 : port;
@@ -64,11 +61,9 @@ public class CompSocYAMLConfig extends CompSocConfig {
         throws ConfigurationException {
         try {
             return cls.cast(map.get(key));
-        } catch(ClassCastException e){
+        } catch (ClassCastException e) {
             throw new ConfigurationException("Invalid type for " + name);
         }
     }
-    
-    
     
 }

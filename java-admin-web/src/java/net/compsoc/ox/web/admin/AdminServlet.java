@@ -1,17 +1,12 @@
 package net.compsoc.ox.web.admin;
 
 import java.io.IOException;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.compsoc.ox.database.Database;
-import net.compsoc.ox.database.config.CompSocConfig;
-import net.compsoc.ox.database.config.CompSocYAMLConfig;
-import net.compsoc.ox.database.util.exceptions.ConfigurationException;
-import net.compsoc.ox.database.util.exceptions.DatabaseInitialisationException;
 import net.compsoc.ox.web.admin.sections.RootSection;
 import net.compsoc.ox.web.admin.sections.Section;
 import net.compsoc.ox.web.admin.util.PageBuilder;
@@ -26,24 +21,8 @@ public class AdminServlet extends HttpServlet {
     private final PageRenderer pageRenderer = new PageRenderer();
     private final Section rootSection = new RootSection();
     
-    public AdminServlet() {
-        // Create Database
-        Database database = null;
-        try {
-            database = Database.fromConfig(loadConfig());
-        } catch (ConfigurationException e) {
-            System.out.print("Could not start, configuration error: ");
-            System.out.println(e.getMessage());
-            System.exit(1);
-        } catch (DatabaseInitialisationException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
+    public AdminServlet(Database database) {
         this.database = database;
-    }
-    
-    private CompSocConfig loadConfig() throws ConfigurationException {
-        return new CompSocYAMLConfig(null);
     }
     
     @Override

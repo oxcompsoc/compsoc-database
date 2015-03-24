@@ -6,6 +6,7 @@ cd $working/java-core
 mvn -e clean install
 
 cd $working/java-admin-web
-mvn -e clean compile exec:java
+mvn -e clean assembly:assembly
 
 cd $working
+java -jar java-admin-web/target/compsoc-admin-web-jar-with-dependencies.jar config.yaml
