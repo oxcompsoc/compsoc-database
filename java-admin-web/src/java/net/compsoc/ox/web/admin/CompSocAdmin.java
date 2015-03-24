@@ -35,10 +35,11 @@ public class CompSocAdmin {
             return;
         }
         
-        Server server = new Server(8080);
+        System.out.println("Starting server on port " + config.port());
+        Server server = new Server(config.port());
         
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
-        context.setContextPath("/admin/");
+        context.setContextPath(config.rootPath());
         server.setHandler(context);
         
         // Dynamic Pages

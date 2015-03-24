@@ -6,16 +6,37 @@ public final class CompSocAdminConfig {
     
     protected DatabaseConfig database;
     
+    private int port = 8080;
+    private String rootPath = "/";
+    
     // Getters
     
     public DatabaseConfig database() {
         return database;
     }
     
+    public int port(){
+        return port;
+    }
+    
+    public String rootPath(){
+        return rootPath;
+    }
+    
     // Setters
     
     protected void setDatabase(DatabaseConfig database){
         this.database = database;
+    }
+    
+    protected void setPort(Integer port){
+        if(port != null)
+            this.port = port;
+    }
+    
+    protected void setRootPath(String rootPath){
+        if(rootPath != null)
+            this.rootPath = rootPath;
     }
     
     public static final class DatabaseConfig implements CompSocDatabaseConfig {

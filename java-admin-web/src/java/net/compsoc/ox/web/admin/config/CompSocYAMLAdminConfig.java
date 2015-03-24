@@ -30,9 +30,13 @@ public class CompSocYAMLAdminConfig {
     
     private static void setupConfig(CompSocAdminConfig config, Map<String, Object> data)
         throws ConfigurationException {
+        
         Object dbConfig = data.get("database");
         if (dbConfig != null)
             setupDatabase(config, prepareMap(dbConfig, "database"));
+        
+        config.setPort(getValue(data, "port", Integer.class, "port"));
+        config.setRootPath(getValue(data, "root_path", String.class, "root_path"));
         
     }
     
