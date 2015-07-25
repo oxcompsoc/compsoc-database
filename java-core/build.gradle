@@ -1,0 +1,26 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+
+group = 'net.compsoc.ox'
+version = '0.0.1-SNAPSHOT'
+
+description = """Core Library for CompSoc Database"""
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.postgresql', name: 'postgresql', version:'9.4-1201-jdbc41'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src'
+        }
+    }
+}

@@ -19,7 +19,7 @@ public class StaticServlet extends HttpServlet {
         ClassLoader cl = CompSocAdmin.class.getClassLoader();
         
         String path = request.getPathInfo();
-        InputStream is = cl.getResourceAsStream("resources/static" + path);
+        InputStream is = cl.getResourceAsStream("static" + path);
         
         if(is == null){
             response.sendError(404);

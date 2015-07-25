@@ -1,0 +1,4 @@
+#org.springsource.ide.eclipse.gradle.core.preferences.GradleProjectPreferences
+#Sat Jul 25 14:32:00 BST 2015
+build.family.org.gradle.tooling.model.eclipse.HierarchicalEclipseProject=;java-admin-web;java-core;
+org.springsource.ide.eclipse.gradle.rootprojectloc=
