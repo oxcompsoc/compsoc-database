@@ -12,4 +12,9 @@ public class StatusException extends Exception {
         return new StatusException(404);
     }
     
+    public static StatusException do500(Throwable t){
+        t.printStackTrace();
+        return new StatusException(500);
+    }
+    
 }

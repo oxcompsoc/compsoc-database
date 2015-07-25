@@ -1,0 +1,11 @@
+{% extends "page.peb" %}
+
+{% block content %}
+  <h2>
+    Internal Error
+  </h2>
+  <p>
+    An error occured on the server and has been logged, please try again later.
+  </p>
+
+{% endblock %}

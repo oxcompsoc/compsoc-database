@@ -1,8 +1,10 @@
 package net.compsoc.ox.web.admin.sections.events;
 
 import java.io.IOException;
+import java.util.List;
 
 import net.compsoc.ox.database.iface.events.Events;
+import net.compsoc.ox.database.util.exceptions.DatabaseOperationException;
 import net.compsoc.ox.web.admin.sections.MainSectionsEnum;
 import net.compsoc.ox.web.admin.sections.Section;
 import net.compsoc.ox.web.admin.sections.events.config.EventsConfigSection;
@@ -34,8 +36,12 @@ public class EventsSection extends Section {
         throws IOException, StatusException {
         builder.put("title", MainSectionsEnum.EVENTS.label);
         
-        builder.put("events",
-            WrappedIndexedItem.wrappedIndexedItemList(events.getKeyFactory(), events.getEvents()));
+        try {
+            List<?> eventsList = WrappedIndexedItem.wrappedIndexedItemList(events.getKeyFactory(), events.getEvents());
+            builder.put("events", eventsList);
+        } catch (DatabaseOperationException e) {
+            builder.errors().add("Unable to fetch events");
+        }
         
         builder.render(Template.EVENTS);
     }

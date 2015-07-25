@@ -10,8 +10,6 @@ import net.compsoc.ox.database.iface.events.Venue;
 import net.compsoc.ox.database.iface.events.Venues;
 
 public class DummyVenues implements Venues<Integer> {
-    
-    private static final KeyFactory<Integer> KEY_FACTORY = new KeyFactory.IntegerKeyFactory();
 
     private final Map<Integer, DummyVenue> venues = new LinkedHashMap<>();
     private int nextKey = 1;
@@ -76,7 +74,7 @@ public class DummyVenues implements Venues<Integer> {
 
     @Override
     public KeyFactory<Integer> getKeyFactory() {
-        return KEY_FACTORY;
+        return KeyFactory.IntegerKeyFactory.SINGLETON;
     }
 
     @Override

@@ -10,6 +10,7 @@ import net.compsoc.ox.database.iface.events.Events;
 import net.compsoc.ox.database.iface.events.Tag;
 import net.compsoc.ox.database.iface.events.Term;
 import net.compsoc.ox.database.iface.events.Venue;
+import net.compsoc.ox.database.util.exceptions.DatabaseOperationException;
 import net.compsoc.ox.web.admin.sections.Section;
 import net.compsoc.ox.web.admin.templating.Template;
 import net.compsoc.ox.web.admin.util.NonceManager;
@@ -63,6 +64,9 @@ public class EditEventSection extends Section {
                 event = events.getEvent(eventKey);
             } catch (InvalidKeyException | NotFoundException ev) {
                 throw StatusException.do404();
+            } catch (DatabaseOperationException e) {
+                StatusException.do500(e);
+                return;
             }
             
             fillFormWithData(builder, events, event);
@@ -118,9 +122,14 @@ public class EditEventSection extends Section {
         builder.put("form_description", event.description());
         
         StringBuilder tagsSB = new StringBuilder();
-        for (Tag tag : event.tags()) {
-            tagsSB.append(tag.slug());
-            tagsSB.append(',');
+        try {
+            for (Tag tag : event.tags()) {
+                tagsSB.append(tag.slug());
+                tagsSB.append(',');
+            }
+        } catch (DatabaseOperationException e) {
+            e.printStackTrace();
+            builder.errors().add("Error getting event tags");
         }
         builder.put("form_tags", tagsSB.toString());
     }

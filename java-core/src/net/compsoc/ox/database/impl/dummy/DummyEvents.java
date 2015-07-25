@@ -22,8 +22,6 @@ import net.compsoc.ox.database.iface.events.Venues;
 
 public class DummyEvents extends DummyDatabaseObject implements Events<Integer, Integer> {
     
-    private static final KeyFactory<Integer> KEY_FACTORY = new KeyFactory.IntegerKeyFactory();
-    
     private static final DateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
     
     private Map<Integer, Event<Integer, Integer>> events = new LinkedHashMap<>();
@@ -110,7 +108,7 @@ public class DummyEvents extends DummyDatabaseObject implements Events<Integer, 
 
     @Override
     public KeyFactory<Integer> getKeyFactory() {
-        return KEY_FACTORY;
+        return KeyFactory.IntegerKeyFactory.SINGLETON;
     }
     
 }

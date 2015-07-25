@@ -3,7 +3,6 @@ package net.compsoc.ox.database.impl.sql;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import net.compsoc.ox.database.iface.events.Events;
 import net.compsoc.ox.database.util.exceptions.DatabaseInitialisationException;
 
 public class PostgresDatabase extends SQLDatabase {
@@ -32,11 +31,6 @@ public class PostgresDatabase extends SQLDatabase {
         } catch (SQLException e) {
             throw new DatabaseInitialisationException(e);
         }
-    }
-    
-    @Override
-    public Events<?, ?> events() {
-        return null;
     }
     
 }

@@ -4,10 +4,13 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import net.compsoc.ox.database.Database;
+import net.compsoc.ox.database.impl.sql.events.SQLEvents;
 
 public abstract class SQLDatabase extends Database {
     
     private Connection connection;
+    
+    private SQLEvents events; // Lazily Instantiated
     
     public SQLDatabase() {
         Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -27,15 +30,21 @@ public abstract class SQLDatabase extends Database {
         });
     }
     
-    protected void setupConnection(Connection connection) {
-        if (connection != null)
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+    protected void setupConnection(Connection connection) throws SQLException {
         this.connection = connection;
+        this.events = new SQLEvents(connection);
         
+    }
+    
+    private void requireConnection(){
+        if(this.connection == null)
+            throw new RuntimeException("Connection not yet setup");
+    }
+    
+    @Override
+    public SQLEvents events() {
+        requireConnection();
+        return events;
     }
     
 }

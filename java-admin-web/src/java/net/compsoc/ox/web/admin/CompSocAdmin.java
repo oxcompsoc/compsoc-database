@@ -31,7 +31,8 @@ public class CompSocAdmin {
             System.out.println(e.getMessage());
             return;
         } catch (DatabaseInitialisationException e) {
-            e.printStackTrace();
+            System.out.print("Error during database initialisation: ");
+            System.out.println(e.getMessage());
             return;
         }
         
@@ -45,6 +46,8 @@ public class CompSocAdmin {
         // Dynamic Pages
         context.addServlet(new ServletHolder(new AdminServlet(db)), "/*");
         context.addServlet(new ServletHolder(new StaticServlet()), "/static/*");
+
+        System.out.println("READY...");
         
         server.start();
         server.join();

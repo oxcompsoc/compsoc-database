@@ -6,6 +6,7 @@ import net.compsoc.ox.database.iface.core.InvalidKeyException;
 import net.compsoc.ox.database.iface.core.NotFoundException;
 import net.compsoc.ox.database.iface.events.Event;
 import net.compsoc.ox.database.iface.events.Events;
+import net.compsoc.ox.database.util.exceptions.DatabaseOperationException;
 import net.compsoc.ox.web.admin.sections.Section;
 import net.compsoc.ox.web.admin.templating.Template;
 import net.compsoc.ox.web.admin.util.PageBuilder;
@@ -55,6 +56,9 @@ public class ViewEventsSection extends Section {
                 event = events.getEvent(eventKey);
             } catch (InvalidKeyException | NotFoundException ev) {
                 throw StatusException.do404();
+            } catch (DatabaseOperationException e) {
+                StatusException.do500(e);
+                return;
             }
             
             String title = event.title() != null ? "Event: " + event.title() : "Event: <no name>";

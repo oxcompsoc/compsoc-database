@@ -1,6 +1,9 @@
 package net.compsoc.ox.web.admin.templating;
 
 public enum Template {
+    
+    ERROR_500("errors/500.peb"),
+    
     HOME("home.peb"),
     
     EVENTS("events/events.peb"),
