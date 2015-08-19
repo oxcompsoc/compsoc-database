@@ -12,6 +12,7 @@ import net.compsoc.ox.database.iface.events.Events;
 import net.compsoc.ox.database.iface.events.Tag;
 import net.compsoc.ox.database.iface.events.Term;
 import net.compsoc.ox.database.iface.events.Venue;
+import net.compsoc.ox.database.util.exceptions.DatabaseOperationException;
 import net.compsoc.ox.web.admin.sections.Section;
 import net.compsoc.ox.web.admin.templating.Template;
 import net.compsoc.ox.web.admin.util.NonceManager;
@@ -75,7 +76,13 @@ public class AddEventSection extends Section {
         public void handleData(int year, Term term, String slug, String title, String description,
             String facebookEventId, Venue<VKey> venue, Date start, Date end, Set<Tag> tags)
             throws RedirectException {
-            Event<EKey, VKey> event = events.addEvent(year, term, slug, title, description, facebookEventId, venue, start, end);
+            Event<EKey, VKey> event;
+            try {
+                event = events.addEvent(year, term, slug, title, description, facebookEventId, venue, start, end);
+            } catch (DatabaseOperationException e) {
+                builder.errors().add("Unable to add event: " + e.getMessage());
+                return;
+            }
             try {
                 events.setTags(event.key(), tags);
             } catch (NotFoundException | InvalidKeyException e) {

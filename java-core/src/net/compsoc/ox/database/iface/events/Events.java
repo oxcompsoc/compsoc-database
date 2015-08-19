@@ -25,7 +25,8 @@ public interface Events<Key, VenueKey> {
         DatabaseOperationException;
     
     public Event<Key, VenueKey> addEvent(int year, Term term, String slug, String title,
-        String description, String facebookEventId, Venue<VenueKey> venue, Date start, Date end);
+        String description, String facebookEventId, Venue<VenueKey> venue, Date start, Date end)
+        throws DatabaseOperationException;
     
     public Event<Key, VenueKey> updateEvent(Key event, int year, Term term, String slug,
         String title, String description, String facebookEventId, Venue<VenueKey> venue,

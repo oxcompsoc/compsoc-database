@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,21 +28,27 @@ public class SQLEvents implements Events<Integer, String> {
     private static final String Q_SELECT_SINGLE = "SELECT * FROM web_events WHERE event_id = ?";
     private static final String Q_SELECT_EVENT_TAGS =
         "SELECT tag_id from web_event_tags WHERE event_id = ?";
+    private static final String Q_INSERT =
+        "INSERT INTO web_events (year, term, event_slug, title, description, facebook_event_id, venue, start_ts, end_ts) VALUES (?, ?::term, ?, ?, ?, ?, ?, ?, ?)";
+    private static final String Q_UPDATE =
+        "UPDATE web_events SET year = ?, term = ?::term, event_slug = ?, title = ?, description = ?, facebook_event_id = ?, venue = ?, start_ts = ?, end_ts = ? WHERE event_id = ?";
     
-    private final Connection connection;
     private final PreparedStatement selectAllEvents;
     private final PreparedStatement selectSingleEvent;
     private final PreparedStatement selectEventTags;
+    private final PreparedStatement insertEvent;
+    private final PreparedStatement updateEvent;
     
     private Terms terms; // Lazily Instantiated
     private final SQLVenues venues;
     private final SQLTags tags;
     
     public SQLEvents(Connection connection) throws SQLException {
-        this.connection = connection;
         this.selectAllEvents = connection.prepareStatement(Q_SELECT_ALL);
         this.selectSingleEvent = connection.prepareStatement(Q_SELECT_SINGLE);
         this.selectEventTags = connection.prepareStatement(Q_SELECT_EVENT_TAGS);
+        this.insertEvent = connection.prepareStatement(Q_INSERT);
+        this.updateEvent = connection.prepareStatement(Q_UPDATE);
         
         tags = new SQLTags(connection);
         venues = new SQLVenues(connection);
@@ -102,22 +109,50 @@ public class SQLEvents implements Events<Integer, String> {
         selectEventTags.setInt(1, eventId);
         return selectEventTags.executeQuery();
     }
-
+    
     @Override
-    public synchronized Event<Integer, String> addEvent(int year, Term term, String slug, String title,
-        String description, String facebookEventId, Venue<String> venue, Date start, Date end) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public synchronized Event<Integer, String> updateEvent(Integer event, int year, Term term, String slug,
+    public synchronized Event<Integer, String> addEvent(int year, Term term, String slug,
         String title, String description, String facebookEventId, Venue<String> venue, Date start,
-        Date end) {
+        Date end) throws DatabaseOperationException {
+        try {
+            insertEvent.setInt(1, year);
+            insertEvent.setString(2, term.name().toLowerCase());
+            insertEvent.setString(3, slug);
+            insertEvent.setString(4, title);
+            insertEvent.setString(5, description);
+            insertEvent.setString(6, facebookEventId);
+            insertEvent.setString(7, venue.key());
+            insertEvent.setDate(8, new java.sql.Date(start.getTime()));
+            insertEvent.setDate(9, new java.sql.Date(end.getTime()));
+            
+            if(insertEvent.executeUpdate() == 0)
+                throw new DatabaseOperationException("Unable to create event, zero rows affected");
+            
+            try (ResultSet generatedKeys = insertEvent.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return(getEvent(generatedKeys.getInt(1)));
+                }
+                else {
+                    throw new SQLException("Creating event failed, no ID obtained.");
+                }
+            } catch (NotFoundException | InvalidKeyException e) {
+                throw new DatabaseOperationException("Exception fetching event after creation", e);
+            }
+            
+        } catch (SQLException e) {
+            throw new DatabaseOperationException(e);
+        }
+        
+    }
+    
+    @Override
+    public synchronized Event<Integer, String> updateEvent(Integer event, int year, Term term,
+        String slug, String title, String description, String facebookEventId, Venue<String> venue,
+        Date start, Date end) {
         // TODO Auto-generated method stub
         return null;
     }
-
+    
     @Override
     public synchronized void setTags(Integer event, Set<Tag> tags) {
         // TODO Auto-generated method stub
