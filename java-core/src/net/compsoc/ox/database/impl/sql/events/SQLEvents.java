@@ -4,16 +4,20 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import net.compsoc.ox.database.iface.core.InvalidKeyException;
 import net.compsoc.ox.database.iface.core.KeyFactory;
 import net.compsoc.ox.database.iface.core.NotFoundException;
 import net.compsoc.ox.database.iface.events.Event;
 import net.compsoc.ox.database.iface.events.Events;
+import net.compsoc.ox.database.iface.events.Tag;
 import net.compsoc.ox.database.iface.events.Term;
 import net.compsoc.ox.database.iface.events.Terms;
+import net.compsoc.ox.database.iface.events.Venue;
 import net.compsoc.ox.database.impl.dummy.DummyTerms;
 import net.compsoc.ox.database.util.exceptions.DatabaseOperationException;
 
@@ -72,7 +76,7 @@ public class SQLEvents implements Events<Integer, String> {
         try {
             ResultSet rs = selectAllEvents.executeQuery();
             while (rs.next())
-                list.add(new SQLEvent(this, connection, rs));
+                list.add(new SQLEvent(this, rs));
         } catch (SQLException e) {
             throw new DatabaseOperationException(e);
         }
@@ -86,7 +90,7 @@ public class SQLEvents implements Events<Integer, String> {
             selectSingleEvent.setInt(1, key);
             ResultSet rs = selectSingleEvent.executeQuery();
             if (rs.next())
-                return new SQLEvent(this, connection, rs);
+                return new SQLEvent(this, rs);
             else
                 throw new NotFoundException();
         } catch (SQLException e) {
@@ -94,15 +98,30 @@ public class SQLEvents implements Events<Integer, String> {
         }
     }
     
-    @Override
-    public synchronized Event<Integer, String> addEvent(int year, Term term, String slug) {
-        // TODO: implement
-        return null;
-    }
-    
     protected synchronized ResultSet getTagsForEvent(int eventId) throws SQLException {
         selectEventTags.setInt(1, eventId);
         return selectEventTags.executeQuery();
+    }
+
+    @Override
+    public synchronized Event<Integer, String> addEvent(int year, Term term, String slug, String title,
+        String description, String facebookEventId, Venue<String> venue, Date start, Date end) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public synchronized Event<Integer, String> updateEvent(Integer event, int year, Term term, String slug,
+        String title, String description, String facebookEventId, Venue<String> venue, Date start,
+        Date end) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public synchronized void setTags(Integer event, Set<Tag> tags) {
+        // TODO Auto-generated method stub
+        
     }
     
 }

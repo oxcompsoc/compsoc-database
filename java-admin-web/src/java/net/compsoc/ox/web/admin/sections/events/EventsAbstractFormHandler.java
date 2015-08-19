@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import net.compsoc.ox.database.iface.core.InvalidKeyException;
-import net.compsoc.ox.database.iface.events.Event;
 import net.compsoc.ox.database.iface.events.Events;
 import net.compsoc.ox.database.iface.events.Tag;
 import net.compsoc.ox.database.iface.events.Term;
@@ -24,14 +23,9 @@ public abstract class EventsAbstractFormHandler<EKey, VKey> extends FormHandler 
         this.events = events;
     }
     
-    /**
-     * Get or create the required event, and ensure that the year, term and slug
-     * are updated accordingly.
-     * 
-     */
-    public abstract Event<EKey, VKey> getEvent(int year, Term term, String slug);
-    
-    public abstract void complete(Event<EKey, VKey> event) throws RedirectException;
+    public abstract void handleData(int year, Term term, String slug, String title,
+        String description, String facebookEventId, Venue<VKey> venue, Date start, Date end,
+        Set<Tag> tags) throws RedirectException;
     
     @Override
     public boolean doPostRequest(PageBuilder builder) throws RedirectException {
@@ -157,31 +151,14 @@ public abstract class EventsAbstractFormHandler<EKey, VKey> extends FormHandler 
         
         if (builder.errors().isEmpty()) {
             // Add / Update Event
-            Event<EKey, VKey> event = getEvent(year, term, slug);
+            if (name != null && name.isEmpty())
+                name = null;
             
-            event.setStartTimestamp(startTimestamp);
-            event.setEndTimestamp(endTimestamp);
+            if (facebookEventIDString != null && facebookEventIDString.isEmpty())
+                facebookEventIDString = null;
             
-            if (facebookEventIDString != null && !facebookEventIDString.isEmpty())
-                event.setFacebookEventID(facebookEventIDString);
-            else
-                event.setFacebookEventID(null);
-            
-            // Remove venue if null
-            event.setVenue(venue);
-            
-            if (name != null && !name.isEmpty())
-                event.setTitle(name);
-            else
-                event.setTitle(null);
-            
-            // Remove desctiption iff null
-            event.setDescription(description);
-            
-            event.setTags(tags);
-            
-            // Handle As Appropriate
-            complete(event);
+            handleData(year, term, slug, name, description, facebookEventIDString, venue,
+                startTimestamp, endTimestamp, tags);
         }
         
         // Restore form data if an error exists

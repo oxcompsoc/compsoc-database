@@ -1,6 +1,5 @@
 package net.compsoc.ox.database.impl.sql.events;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
@@ -17,24 +16,22 @@ import net.compsoc.ox.database.util.exceptions.DatabaseOperationException;
 public class SQLEvent implements Event<Integer, String> {
 
     private final SQLEvents events;
-    private final Connection connection;
     
     private final int key;
     
-    private int year;
-    private String termSlug;
-    private String slug;
-    private String title;
-    private String description;
-    private String facebookEventID;
-    private String venueKey;
-    private Date startTimestamp;
-    private Date endTimestamp;
+    private final int year;
+    private final String termSlug;
+    private final String slug;
+    private final String title;
+    private final String description;
+    private final String facebookEventID;
+    private final String venueKey;
+    private final Date startTimestamp;
+    private final Date endTimestamp;
     
-    public SQLEvent(SQLEvents events, Connection connection, ResultSet currentSet)
+    public SQLEvent(SQLEvents events, ResultSet currentSet)
         throws SQLException {
         this.events = events;
-        this.connection = connection;
         
         this.key = currentSet.getInt("event_id");
         this.year = currentSet.getInt("year");
@@ -54,47 +51,47 @@ public class SQLEvent implements Event<Integer, String> {
     }
 
     @Override
-    public synchronized int year() {
+    public int year() {
         return year;
     }
 
     @Override
-    public synchronized Term term() {
+    public Term term() {
         return termSlug == null ? null : events.terms().getTermBySlug(termSlug);
     }
 
     @Override
-    public synchronized String slug() {
+    public String slug() {
         return slug;
     }
 
     @Override
-    public synchronized String title() {
+    public String title() {
         return title;
     }
 
     @Override
-    public synchronized String description() {
+    public String description() {
         return description;
     }
 
     @Override
-    public synchronized String facebookEventID() {
+    public String facebookEventID() {
         return facebookEventID;
     }
 
     @Override
-    public synchronized Venue<String> venue() {
+    public Venue<String> venue() {
         return venueKey == null ? null : events.venues().getVenueByKey(venueKey);
     }
 
     @Override
-    public synchronized Date startTimestamp() {
+    public Date startTimestamp() {
         return startTimestamp;
     }
 
     @Override
-    public synchronized Date endTimestamp() {
+    public Date endTimestamp() {
         return endTimestamp;
     }
 
@@ -121,54 +118,6 @@ public class SQLEvent implements Event<Integer, String> {
         Term t = events.terms().getTermBySlug(termSlug);
         Date monWK1 = events.terms().termDates().getWeek1Date(year, t);
         return TermDatesUtil.getTermWeek(monWK1, startTimestamp);
-    }
-    
-
-    @Override
-    public synchronized void setPrimary(int year, Term term, String slug) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public synchronized void setTitle(String title) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public synchronized void setDescription(String description) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public synchronized void setFacebookEventID(String id) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public synchronized void setVenue(Venue<String> venue) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public synchronized void setTags(Set<Tag> tags) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public synchronized void setStartTimestamp(Date start) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public synchronized void setEndTimestamp(Date end) {
-        // TODO Auto-generated method stub
     }
     
 }

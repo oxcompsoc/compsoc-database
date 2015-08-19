@@ -9,22 +9,25 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import net.compsoc.ox.database.iface.core.InvalidKeyException;
 import net.compsoc.ox.database.iface.core.KeyFactory;
 import net.compsoc.ox.database.iface.core.NotFoundException;
 import net.compsoc.ox.database.iface.events.Event;
 import net.compsoc.ox.database.iface.events.Events;
+import net.compsoc.ox.database.iface.events.Tag;
 import net.compsoc.ox.database.iface.events.Tags;
 import net.compsoc.ox.database.iface.events.Term;
 import net.compsoc.ox.database.iface.events.Terms;
+import net.compsoc.ox.database.iface.events.Venue;
 import net.compsoc.ox.database.iface.events.Venues;
 
 public class DummyEvents extends DummyDatabaseObject implements Events<Integer, Integer> {
     
     private static final DateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
     
-    private Map<Integer, Event<Integer, Integer>> events = new LinkedHashMap<>();
+    private Map<Integer, DummyEvent> events = new LinkedHashMap<>();
     private int nextKey = 0;
     
     private DummyVenues venues; // Lazily Instantiated
@@ -62,7 +65,7 @@ public class DummyEvents extends DummyDatabaseObject implements Events<Integer, 
         
     }
     
-    public List<Event<Integer, Integer>> getEvents() {
+    public List<DummyEvent> getEvents() {
         return new ArrayList<>(events.values());
     }
     
@@ -73,10 +76,24 @@ public class DummyEvents extends DummyDatabaseObject implements Events<Integer, 
         return venues;
     }
     
-    @Override
-    public synchronized DummyEvent addEvent(int year, Term term, String slug) {
+    private synchronized DummyEvent addEvent(int year, Term term, String slug) {
         int k = nextKey++;
         DummyEvent e = new DummyEvent(db, k, year, term, slug);
+        events.put(k, e);
+        return e;
+    }
+    
+    @Override
+    public synchronized DummyEvent addEvent(int year, Term term, String slug, String title,
+        String description, String facebookEventId, Venue<Integer> venue, Date start, Date end) {
+        int k = nextKey++;
+        DummyEvent e = new DummyEvent(db, k, year, term, slug);
+        e.setTitle(title);
+        e.setDescription(description);
+        e.setFacebookEventID(facebookEventId);
+        e.setVenue(venue);
+        e.setStartTimestamp(start);
+        e.setEndTimestamp(end);
         events.put(k, e);
         return e;
     }
@@ -87,28 +104,49 @@ public class DummyEvents extends DummyDatabaseObject implements Events<Integer, 
             terms = new DummyTerms();
         return terms;
     }
-
+    
     @Override
-    public Event<Integer, Integer> getEvent(Integer key) throws NotFoundException, InvalidKeyException {
-        if(key == null)
+    public DummyEvent getEvent(Integer key) throws NotFoundException, InvalidKeyException {
+        if (key == null)
             throw new InvalidKeyException();
-        Event<Integer, Integer> e = events.get(key);
-        if(e == null)
+        DummyEvent e = events.get(key);
+        if (e == null)
             throw new NotFoundException();
         else
             return e;
     }
-
+    
     @Override
     public Tags tags() {
         if (tags == null)
             tags = new DummyTags();
         return tags;
     }
-
+    
     @Override
     public KeyFactory<Integer> getKeyFactory() {
         return KeyFactory.IntegerKeyFactory.SINGLETON;
+    }
+    
+    @Override
+    public Event<Integer, Integer> updateEvent(Integer event, int year, Term term, String slug,
+        String title, String description, String facebookEventId, Venue<Integer> venue, Date start,
+        Date end) throws NotFoundException, InvalidKeyException {
+        DummyEvent e = getEvent(event);
+        e.setPrimary(year, term, slug);
+        e.setTitle(title);
+        e.setDescription(description);
+        e.setFacebookEventID(facebookEventId);
+        e.setVenue(venue);
+        e.setStartTimestamp(start);
+        e.setEndTimestamp(end);
+        return e;
+    }
+    
+    @Override
+    public void setTags(Integer event, Set<Tag> tags) throws NotFoundException, InvalidKeyException {
+        DummyEvent e = getEvent(event);
+        e.setTags(tags);
     }
     
 }

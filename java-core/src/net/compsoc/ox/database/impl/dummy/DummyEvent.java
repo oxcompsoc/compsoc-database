@@ -84,39 +84,32 @@ public class DummyEvent extends DummyDatabaseObject implements Event<Integer, In
         return endTimestamp;
     }
 
-    @Override
     public synchronized void setPrimary(int year, Term term, String slug) {
         this.year = year;
         this.termSlug = term.slug();
         this.slug = slug;
     }
 
-    @Override
     public void setTitle(String title) {
         this.title = title;
     }
 
-    @Override
     public void setDescription(String description) {
         this.description = description;
     }
 
-    @Override
     public void setFacebookEventID(String id) {
         this.facebookEventID = id;
     }
 
-    @Override
     public void setVenue(Venue<Integer> venue) {
         this.venueKey = venue.key();
     }
 
-    @Override
     public void setStartTimestamp(Date start) {
         this.startTimestamp = start;
     }
 
-    @Override
     public void setEndTimestamp(Date end) {
         this.endTimestamp = end;
     }
@@ -138,7 +131,6 @@ public class DummyEvent extends DummyDatabaseObject implements Event<Integer, In
         return tags;
     }
 
-    @Override
     public void setTags(Set<Tag> tags) {
         tagSlugs.clear();
         for(Tag tag : tags)

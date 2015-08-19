@@ -3,10 +3,15 @@ package net.compsoc.ox.web.admin.sections.events;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Set;
 
+import net.compsoc.ox.database.iface.core.InvalidKeyException;
+import net.compsoc.ox.database.iface.core.NotFoundException;
 import net.compsoc.ox.database.iface.events.Event;
 import net.compsoc.ox.database.iface.events.Events;
+import net.compsoc.ox.database.iface.events.Tag;
 import net.compsoc.ox.database.iface.events.Term;
+import net.compsoc.ox.database.iface.events.Venue;
 import net.compsoc.ox.web.admin.sections.Section;
 import net.compsoc.ox.web.admin.templating.Template;
 import net.compsoc.ox.web.admin.util.NonceManager;
@@ -65,14 +70,18 @@ public class AddEventSection extends Section {
             super(events);
             this.builder = builder;
         }
-        
+
         @Override
-        public Event<EKey, VKey> getEvent(int year, Term term, String slug) {
-            return events.addEvent(year, term, slug);
-        }
-        
-        @Override
-        public void complete(Event<EKey, VKey> event) throws RedirectException {
+        public void handleData(int year, Term term, String slug, String title, String description,
+            String facebookEventId, Venue<VKey> venue, Date start, Date end, Set<Tag> tags)
+            throws RedirectException {
+            Event<EKey, VKey> event = events.addEvent(year, term, slug, title, description, facebookEventId, venue, start, end);
+            try {
+                events.setTags(event.key(), tags);
+            } catch (NotFoundException | InvalidKeyException e) {
+                throw new RuntimeException("Unexpected exception during event creation", e);
+            }
+            
             String msg =
                 String.format("Successfully Added Event! "
                     + "<a href=\"../view/%s/\">View Event</a>",

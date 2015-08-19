@@ -1,6 +1,8 @@
 package net.compsoc.ox.database.iface.events;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import net.compsoc.ox.database.iface.core.InvalidKeyException;
 import net.compsoc.ox.database.iface.core.KeyFactory;
@@ -17,11 +19,17 @@ public interface Events<Key, VenueKey> {
     
     public Tags tags();
     
-    public List<Event<Key, VenueKey>> getEvents() throws DatabaseOperationException;
+    public List<? extends Event<Key, VenueKey>> getEvents() throws DatabaseOperationException;
     
     public Event<Key, VenueKey> getEvent(Key key) throws NotFoundException, InvalidKeyException,
         DatabaseOperationException;
     
-    public Event<Key, VenueKey> addEvent(int year, Term term, String slug);
+    public Event<Key, VenueKey> addEvent(int year, Term term, String slug, String title,
+        String description, String facebookEventId, Venue<VenueKey> venue, Date start, Date end);
     
+    public Event<Key, VenueKey> updateEvent(Key event, int year, Term term, String slug,
+        String title, String description, String facebookEventId, Venue<VenueKey> venue,
+        Date start, Date end) throws NotFoundException, InvalidKeyException;
+    
+    public void setTags(Key event, Set<Tag> tags) throws NotFoundException, InvalidKeyException;
 }

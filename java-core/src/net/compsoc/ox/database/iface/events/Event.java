@@ -25,16 +25,4 @@ public interface Event<Key, VenueKey> extends IndexedItem<Key> {
     public Date endTimestamp();
     public Integer getTermWeek();
     
-    // Setters
-    public void setPrimary(int year, Term term, String slug);
-    
-    public void setTitle(String title);
-    public void setDescription(String description);
-    public void setFacebookEventID(String id);
-    public void setVenue(Venue<VenueKey> venue);
-    public void setTags(Set<Tag> tags);
-    
-    public void setStartTimestamp(Date start);
-    public void setEndTimestamp(Date end);
-    
 }

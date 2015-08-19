@@ -2,6 +2,7 @@ package net.compsoc.ox.web.admin.sections.events;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.Set;
 
 import net.compsoc.ox.database.iface.core.InvalidKeyException;
 import net.compsoc.ox.database.iface.core.NotFoundException;
@@ -145,13 +146,17 @@ public class EditEventSection extends Section {
         }
         
         @Override
-        public Event<EKey, VKey> getEvent(int year, Term term, String slug) {
-            event.setPrimary(year, term, slug);
-            return event;
-        }
-        
-        @Override
-        public void complete(Event<EKey, VKey> event) throws RedirectException {
+        public void handleData(int year, Term term, String slug, String title, String description,
+            String facebookEventId, Venue<VKey> venue, Date start, Date end, Set<Tag> tags)
+            throws RedirectException {
+            try {
+                events.updateEvent(event.key(), year, term, slug, title, description,
+                    facebookEventId, venue, start, end);
+                events.setTags(event.key(), tags);
+            } catch (NotFoundException | InvalidKeyException e) {
+                throw new RuntimeException("Unexpected exception during event editing", e);
+            }
+            
             throw new RedirectException(String.format("../../view/%s/", events.getKeyFactory()
                 .toString(event.key())));
         }
