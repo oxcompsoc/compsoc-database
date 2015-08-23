@@ -125,14 +125,13 @@ public class SQLEvents implements Events<Integer, String> {
             insertEvent.setDate(8, new java.sql.Date(start.getTime()));
             insertEvent.setDate(9, new java.sql.Date(end.getTime()));
             
-            if(insertEvent.executeUpdate() == 0)
+            if (insertEvent.executeUpdate() == 0)
                 throw new DatabaseOperationException("Unable to create event, zero rows affected");
             
             try (ResultSet generatedKeys = insertEvent.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
-                    return(getEvent(generatedKeys.getInt(1)));
-                }
-                else {
+                    return (getEvent(generatedKeys.getInt(1)));
+                } else {
                     throw new SQLException("Creating event failed, no ID obtained.");
                 }
             } catch (NotFoundException | InvalidKeyException e) {
@@ -148,9 +147,32 @@ public class SQLEvents implements Events<Integer, String> {
     @Override
     public synchronized Event<Integer, String> updateEvent(Integer event, int year, Term term,
         String slug, String title, String description, String facebookEventId, Venue<String> venue,
-        Date start, Date end) {
-        // TODO Auto-generated method stub
-        return null;
+        Date start, Date end) throws DatabaseOperationException {
+        try {
+            
+            updateEvent.setInt(1, year);
+            updateEvent.setString(2, term.name().toLowerCase());
+            updateEvent.setString(3, slug);
+            updateEvent.setString(4, title);
+            updateEvent.setString(5, description);
+            updateEvent.setString(6, facebookEventId);
+            updateEvent.setString(7, venue.key());
+            updateEvent.setDate(8, new java.sql.Date(start.getTime()));
+            updateEvent.setDate(9, new java.sql.Date(end.getTime()));
+            updateEvent.setInt(10, event.intValue());
+            
+            if (updateEvent.executeUpdate() == 0)
+                throw new DatabaseOperationException("Unable to update event, zero rows affected");
+            
+            try {
+                return (getEvent(event));
+            } catch (NotFoundException | InvalidKeyException e) {
+                throw new DatabaseOperationException("Exception fetching event after creation", e);
+            }
+            
+        } catch (SQLException e) {
+            throw new DatabaseOperationException(e);
+        }
     }
     
     @Override

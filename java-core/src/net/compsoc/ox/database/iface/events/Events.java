@@ -30,7 +30,7 @@ public interface Events<Key, VenueKey> {
     
     public Event<Key, VenueKey> updateEvent(Key event, int year, Term term, String slug,
         String title, String description, String facebookEventId, Venue<VenueKey> venue,
-        Date start, Date end) throws NotFoundException, InvalidKeyException;
+        Date start, Date end) throws NotFoundException, InvalidKeyException, DatabaseOperationException;
     
     public void setTags(Key event, Set<Tag> tags) throws NotFoundException, InvalidKeyException;
 }

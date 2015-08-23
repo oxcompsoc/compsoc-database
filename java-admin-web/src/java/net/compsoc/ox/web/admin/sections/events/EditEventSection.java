@@ -73,7 +73,7 @@ public class EditEventSection extends Section {
             fillFormWithData(builder, events, event);
             
             // Process form data
-            if (new EditEventFormHandler<EKey, VKey>(events, event).handle(builder))
+            if (new EditEventFormHandler<EKey, VKey>(builder, events, event).handle(builder))
                 return;
             
             NonceManager.setupNonce(builder);
@@ -139,10 +139,13 @@ public class EditEventSection extends Section {
         EventsAbstractFormHandler<EKey, VKey> {
         
         public final Event<EKey, VKey> event;
+        private final PageBuilder builder;
         
-        public EditEventFormHandler(Events<EKey, VKey> events, Event<EKey, VKey> event) {
+        public EditEventFormHandler(PageBuilder builder, Events<EKey, VKey> events,
+            Event<EKey, VKey> event) {
             super(events);
             this.event = event;
+            this.builder = builder;
         }
         
         @Override
@@ -155,6 +158,9 @@ public class EditEventSection extends Section {
                 events.setTags(event.key(), tags);
             } catch (NotFoundException | InvalidKeyException e) {
                 throw new RuntimeException("Unexpected exception during event editing", e);
+            } catch (DatabaseOperationException e) {
+                builder.errors().add("Unable to update event: " + e.getMessage());
+                return;
             }
             
             throw new RedirectException(String.format("../../view/%s/", events.getKeyFactory()
