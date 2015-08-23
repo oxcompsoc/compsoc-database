@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.LinkedList;
@@ -47,7 +48,7 @@ public class SQLEvents implements Events<Integer, String> {
         this.selectAllEvents = connection.prepareStatement(Q_SELECT_ALL);
         this.selectSingleEvent = connection.prepareStatement(Q_SELECT_SINGLE);
         this.selectEventTags = connection.prepareStatement(Q_SELECT_EVENT_TAGS);
-        this.insertEvent = connection.prepareStatement(Q_INSERT);
+        this.insertEvent = connection.prepareStatement(Q_INSERT, Statement.RETURN_GENERATED_KEYS);
         this.updateEvent = connection.prepareStatement(Q_UPDATE);
         
         tags = new SQLTags(connection);
