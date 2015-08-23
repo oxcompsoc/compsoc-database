@@ -56,6 +56,7 @@ public class SQLVenues implements Venues {
 
     @Override
     public synchronized void addVenue(String slug, String name) throws DatabaseOperationException {
+        throw new DatabaseOperationException("Not Implemented");
     }
 
     @Override
