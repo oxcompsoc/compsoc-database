@@ -41,8 +41,8 @@ public class SQLEvent implements Event<Integer, String> {
         this.description = currentSet.getString("description");
         this.facebookEventID = currentSet.getString("facebook_event_id");
         this.venueKey = currentSet.getString("venue");
-        this.startTimestamp = currentSet.getDate("start_ts");
-        this.endTimestamp = currentSet.getDate("end_ts");
+        this.startTimestamp = new Date(currentSet.getTimestamp("start_ts").getTime());
+        this.endTimestamp = new Date(currentSet.getTimestamp("end_ts").getTime());
     }
 
     @Override

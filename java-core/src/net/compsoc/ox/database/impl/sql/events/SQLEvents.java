@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -122,8 +122,8 @@ public class SQLEvents implements Events<Integer, String> {
             insertEvent.setString(5, description);
             insertEvent.setString(6, facebookEventId);
             insertEvent.setString(7, venue.key());
-            insertEvent.setDate(8, new java.sql.Date(start.getTime()));
-            insertEvent.setDate(9, new java.sql.Date(end.getTime()));
+            insertEvent.setTimestamp(8, new Timestamp(start.getTime()));
+            insertEvent.setTimestamp(9, new Timestamp(end.getTime()));
             
             if (insertEvent.executeUpdate() == 0)
                 throw new DatabaseOperationException("Unable to create event, zero rows affected");
@@ -157,8 +157,8 @@ public class SQLEvents implements Events<Integer, String> {
             updateEvent.setString(5, description);
             updateEvent.setString(6, facebookEventId);
             updateEvent.setString(7, venue.key());
-            updateEvent.setDate(8, new java.sql.Date(start.getTime()));
-            updateEvent.setDate(9, new java.sql.Date(end.getTime()));
+            updateEvent.setTimestamp(8, new Timestamp(start.getTime()));
+            updateEvent.setTimestamp(9, new Timestamp(end.getTime()));
             updateEvent.setInt(10, event.intValue());
             
             if (updateEvent.executeUpdate() == 0)
