@@ -11,9 +11,12 @@ import net.compsoc.ox.database.util.exceptions.DatabaseOperationException;
 
 public class DummyVenues implements Venues {
 
+    private final DummyEvents events;
     private final Map<String, DummyVenue> venues = new LinkedHashMap<>();
     
-    {
+    public DummyVenues(DummyEvents events){
+        this.events = events;
+        
         DummyVenue v;
         
         v = new DummyVenue();
@@ -46,12 +49,6 @@ public class DummyVenues implements Venues {
         public String slug() {
             return slug;
         }
-
-        @Override
-        public void setSlugAndName(String slug, String name) {
-            this.slug = slug;
-            this.name = name;
-        }
         
     }
 
@@ -61,12 +58,12 @@ public class DummyVenues implements Venues {
     }
 
     @Override
-    public Venue getVenueBySlug(String slug) {
+    public synchronized Venue getVenueBySlug(String slug) {
         return venues.get(slug);
     }
 
     @Override
-    public void addVenue(String slug, String name) throws DatabaseOperationException {
+    public synchronized void addVenue(String slug, String name) throws DatabaseOperationException {
         if(venues.containsKey(slug)){
             throw new DatabaseOperationException("A venue with that slug already exists");
         }
@@ -74,6 +71,27 @@ public class DummyVenues implements Venues {
         v.name = name;
         v.slug = slug;
         venues.put(slug, v);
+    }
+
+    @Override
+    public synchronized void setVenueSlugAndName(String currentSlug, String slug, String name)
+        throws DatabaseOperationException {
+        if(!venues.containsKey(currentSlug)){
+            throw new DatabaseOperationException("A venue with that slug does not exists");
+        }
+        
+        DummyVenue v = new DummyVenue();
+        v.name = name;
+        v.slug = slug;
+        venues.put(slug, v);
+
+        if(!currentSlug.equals(slug)){
+            venues.remove(currentSlug);
+            
+            for(DummyEvent event : events.getEvents())
+                event.updateVenueSlugIfNeeded(currentSlug, slug);
+        }
+        
     }
     
 }

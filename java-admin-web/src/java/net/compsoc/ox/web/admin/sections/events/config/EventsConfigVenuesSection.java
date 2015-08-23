@@ -114,8 +114,12 @@ public class EventsConfigVenuesSection extends Section {
             if (!RegularExpressions.SLUG_REGEX.matcher(venueSlug).matches())
                 throw new FormError(RegularExpressions.SLUG_REGEX_ERROR);
             
-            venue.setSlugAndName(venueSlug, venueName);
-            builder.messages().add("Successfully Edited Venue");
+            try {
+                venues.setVenueSlugAndName(currentVenueSlug, venueSlug, venueName);
+                builder.messages().add("Successfully Edited Venue");
+            } catch (DatabaseOperationException e) {
+                builder.errors().add("Unable to update venue: " + e.getMessage());
+            }
             
         }
         

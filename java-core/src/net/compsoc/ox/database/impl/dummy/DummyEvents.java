@@ -72,7 +72,7 @@ public class DummyEvents extends DummyDatabaseObject implements Events<Integer> 
     @Override
     public Venues venues() {
         if (venues == null)
-            venues = new DummyVenues();
+            venues = new DummyVenues(this);
         return venues;
     }
     

@@ -102,7 +102,7 @@ public class DummyEvent extends DummyDatabaseObject implements Event<Integer> {
         this.facebookEventID = id;
     }
 
-    public void setVenue(Venue venue) {
+    public synchronized void setVenue(Venue venue) {
         this.venueSlug = venue.slug();
     }
 
@@ -135,6 +135,11 @@ public class DummyEvent extends DummyDatabaseObject implements Event<Integer> {
         tagSlugs.clear();
         for(Tag tag : tags)
             tagSlugs.add(tag.slug());
+    }
+    
+    public synchronized void updateVenueSlugIfNeeded(String oldSlug, String newSlug){
+        if(venueSlug.equals(oldSlug))
+            venueSlug = newSlug;  
     }
     
 }

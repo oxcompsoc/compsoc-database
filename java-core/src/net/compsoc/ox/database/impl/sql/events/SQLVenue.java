@@ -27,11 +27,5 @@ public class SQLVenue implements Venue {
     public String slug() {
         return slug;
     }
-
-    @Override
-    public void setSlugAndName(String slug, String name) {
-        
-    }
-    
     
 }

@@ -15,4 +15,7 @@ public interface Venues {
     
     public void addVenue(String slug, String name) throws DatabaseOperationException;
     
+    public void setVenueSlugAndName(String currentSlug, String slug, String name)
+        throws DatabaseOperationException;
+    
 }
