@@ -1,4 +1,3 @@
 #! /bin/bash
 
-./gradlew execute
-gradle execute -PappArgs="['../config.yaml']"
+./gradlew execute -PappArgs="['../config.yaml']"
