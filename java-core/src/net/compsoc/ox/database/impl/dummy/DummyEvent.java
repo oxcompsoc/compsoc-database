@@ -10,7 +10,7 @@ import net.compsoc.ox.database.iface.events.Term;
 import net.compsoc.ox.database.iface.events.Venue;
 import net.compsoc.ox.database.util.TermDatesUtil;
 
-public class DummyEvent extends DummyDatabaseObject implements Event<Integer, Integer> {
+public class DummyEvent extends DummyDatabaseObject implements Event<Integer> {
     
     private final int key;
     
@@ -20,7 +20,7 @@ public class DummyEvent extends DummyDatabaseObject implements Event<Integer, In
     private String title;
     private String description;
     private String facebookEventID;
-    private Integer venueKey;
+    private String venueSlug;
     private final Set<String> tagSlugs;
     private Date startTimestamp;
     private Date endTimestamp;
@@ -70,8 +70,8 @@ public class DummyEvent extends DummyDatabaseObject implements Event<Integer, In
     }
 
     @Override
-    public Venue<Integer> venue() {
-        return venueKey == null ? null : db.events().venues().getVenueByKey(venueKey);
+    public Venue venue() {
+        return venueSlug == null ? null : db.events().venues().getVenueBySlug(venueSlug);
     }
 
     @Override
@@ -102,8 +102,8 @@ public class DummyEvent extends DummyDatabaseObject implements Event<Integer, In
         this.facebookEventID = id;
     }
 
-    public void setVenue(Venue<Integer> venue) {
-        this.venueKey = venue.key();
+    public void setVenue(Venue venue) {
+        this.venueSlug = venue.slug();
     }
 
     public void setStartTimestamp(Date start) {

@@ -21,7 +21,7 @@ public class WrappedIndexedItem<Key> {
     }
     
     public static <Key> List<WrappedIndexedItem<Key>> wrappedIndexedItemList(
-        KeyFactory<Key> keyFactory, List<? extends IndexedItem<Key>> items) {
+        KeyFactory<Key> keyFactory, Iterable<? extends IndexedItem<Key>> items) {
         List<WrappedIndexedItem<Key>> wrappedItems = new LinkedList<>();
         for (IndexedItem<Key> item : items)
             wrappedItems.add(new WrappedIndexedItem<Key>(keyFactory, item));

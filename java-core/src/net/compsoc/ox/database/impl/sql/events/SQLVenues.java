@@ -9,18 +9,18 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.compsoc.ox.database.iface.core.KeyFactory;
 import net.compsoc.ox.database.iface.events.Venue;
 import net.compsoc.ox.database.iface.events.Venues;
+import net.compsoc.ox.database.util.exceptions.DatabaseOperationException;
 
-public class SQLVenues implements Venues<String> {
+public class SQLVenues implements Venues {
     
     private static final String Q_SELECT_ALL = "SELECT * FROM web_event_venues ORDER BY venue_name ASC";
     
     private final Connection connection;
     private final PreparedStatement selectAllVenues;
     
-    private Map<String, Venue<String>> cache;
+    private Map<String, Venue> cache;
     
     public SQLVenues(Connection connection) throws SQLException {
         this.connection = connection;
@@ -28,18 +28,13 @@ public class SQLVenues implements Venues<String> {
     }
 
     @Override
-    public KeyFactory<String> getKeyFactory() {
-        return KeyFactory.StringKeyFactory.SINGLETON;
-    }
-
-    @Override
-    public synchronized Venue<String> getVenueByKey(String key) {
+    public synchronized Venue getVenueBySlug(String slug) {
         fetchVenuesIfNeeded();
-        return cache.get(key);
+        return cache.get(slug);
     }
 
     @Override
-    public synchronized List<Venue<String>> getVenues() {
+    public synchronized List<Venue> getVenues() {
         fetchVenuesIfNeeded();
         return new ArrayList<>(cache.values());
     }
@@ -51,7 +46,7 @@ public class SQLVenues implements Venues<String> {
                 ResultSet rs = selectAllVenues.executeQuery();
                 while (rs.next()){
                     SQLVenue venue = new SQLVenue(connection, rs);
-                    cache.put(venue.key(), venue);
+                    cache.put(venue.slug(), venue);
                 }
             } catch (SQLException e) {
                 throw new RuntimeException(e);
@@ -60,9 +55,8 @@ public class SQLVenues implements Venues<String> {
     }
 
     @Override
-    public synchronized void addVenue(String slug, String name) {
-        // TODO Auto-generated method stub
-        
+    public synchronized void addVenue(String slug, String name) throws DatabaseOperationException {
+        throw new DatabaseOperationException("Not Implemented");
     }
     
 }

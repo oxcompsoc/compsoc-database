@@ -2,10 +2,10 @@ package net.compsoc.ox.web.admin.sections.events.config;
 
 import java.io.IOException;
 
-import net.compsoc.ox.database.iface.core.InvalidKeyException;
 import net.compsoc.ox.database.iface.events.Venue;
 import net.compsoc.ox.database.iface.events.Venues;
 import net.compsoc.ox.database.util.RegularExpressions;
+import net.compsoc.ox.database.util.exceptions.DatabaseOperationException;
 import net.compsoc.ox.web.admin.sections.Section;
 import net.compsoc.ox.web.admin.templating.Template;
 import net.compsoc.ox.web.admin.util.FormHandler;
@@ -14,7 +14,6 @@ import net.compsoc.ox.web.admin.util.PageBuilder;
 import net.compsoc.ox.web.admin.util.PathInfo;
 import net.compsoc.ox.web.admin.util.RedirectException;
 import net.compsoc.ox.web.admin.util.StatusException;
-import net.compsoc.ox.web.admin.util.database.WrappedIndexedItem;
 
 public class EventsConfigVenuesSection extends Section {
     
@@ -29,15 +28,14 @@ public class EventsConfigVenuesSection extends Section {
         renderPage(info, builder, builder.database.events().venues());
     }
     
-    public <Key> void renderPage(PathInfo info, PageBuilder builder, Venues<Key> venues)
+    public <Key> void renderPage(PathInfo info, PageBuilder builder, Venues venues)
         throws IOException, StatusException, RedirectException {
         builder.put("title", "Event Venues Config");
         
-        if (new EventsConfigVenuesFormHandler<Key>(venues).handle(builder))
+        if (new EventsConfigVenuesFormHandler(venues).handle(builder))
             return;
         
-        builder.put("venues",
-            WrappedIndexedItem.wrappedIndexedItemList(venues.getKeyFactory(), venues.getVenues()));
+        builder.put("venues", venues.getVenues());
         
         NonceManager.setupNonce(builder);
         builder.render(Template.EVENTS_CONFIG_VENUES);
@@ -48,11 +46,11 @@ public class EventsConfigVenuesSection extends Section {
         return null;
     }
     
-    private static class EventsConfigVenuesFormHandler<Key> extends FormHandler {
+    private static class EventsConfigVenuesFormHandler extends FormHandler {
         
-        private final Venues<Key> venues;
+        private final Venues venues;
         
-        public EventsConfigVenuesFormHandler(Venues<Key> venues) {
+        public EventsConfigVenuesFormHandler(Venues venues) {
             this.venues = venues;
         }
         
@@ -87,26 +85,23 @@ public class EventsConfigVenuesSection extends Section {
             if (!RegularExpressions.SLUG_REGEX.matcher(venueSlug).matches())
                 throw new FormError(RegularExpressions.SLUG_REGEX_ERROR);
             
-            venues.addVenue(venueSlug, venueName);
-            builder.messages().add("Successfully Added Venue");
+            try {
+                venues.addVenue(venueSlug, venueName);
+                builder.messages().add("Successfully Added Venue");
+            } catch (DatabaseOperationException e) {
+                builder.errors().add("Error adding venue: " + e.getMessage());
+            }
         }
         
         private void handleEditVenue(PageBuilder builder) throws FormError {
-            String venueKeyString = builder.request.getParameter("venue");
-            if (venueKeyString == null || venueKeyString.isEmpty())
-                throw new FormError("No Venue Key Given");
-            
-            Key venueKey;
-            try {
-                venueKey = venues.getKeyFactory().fromString(venueKeyString);
-            } catch (InvalidKeyException e) {
-                throw new FormError("Invalid Venue Key");
-            }
+            String currentVenueSlug = builder.request.getParameter("venue");
+            if (currentVenueSlug == null || currentVenueSlug.isEmpty())
+                throw new FormError("No Venue slug Given");
             
             // Fetch Venue
-            Venue<Key> venue = venues.getVenueByKey(venueKey);
+            Venue venue = venues.getVenueBySlug(currentVenueSlug);
             if (venue == null)
-                throw new FormError("No Venue Exists with that Key");
+                throw new FormError("No Venue Exists with that slug");
             
             // Ensure valid values for name and slug
             String venueSlug = builder.request.getParameter("venue_slug");

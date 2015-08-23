@@ -1,44 +1,39 @@
 package net.compsoc.ox.database.impl.dummy;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
-import net.compsoc.ox.database.iface.core.KeyFactory;
 import net.compsoc.ox.database.iface.events.Venue;
 import net.compsoc.ox.database.iface.events.Venues;
+import net.compsoc.ox.database.util.exceptions.DatabaseOperationException;
 
-public class DummyVenues implements Venues<Integer> {
+public class DummyVenues implements Venues {
 
-    private final Map<Integer, DummyVenue> venues = new LinkedHashMap<>();
-    private int nextKey = 1;
+    private final Map<String, DummyVenue> venues = new LinkedHashMap<>();
     
     {
         DummyVenue v;
         
         v = new DummyVenue();
-        v.key = nextKey++;
         v.name = "Venue 1";
         v.slug = "venue_1";
-        venues.put(v.key, v);
+        venues.put(v.slug, v);
         
         v = new DummyVenue();
-        v.key = nextKey++;
         v.name = "Venue 2";
         v.slug = "venue_2";
-        venues.put(v.key, v);
+        venues.put(v.slug, v);
         
         v = new DummyVenue();
-        v.key = nextKey++;
         v.name = "Venue 3";
         v.slug = "venue_3";
-        venues.put(v.key, v);
+        venues.put(v.slug, v);
     }
     
-    private class DummyVenue implements Venue<Integer> {
+    private class DummyVenue implements Venue {
         
-        private int key;
         private String name;
         private String slug;
 
@@ -53,11 +48,6 @@ public class DummyVenues implements Venues<Integer> {
         }
 
         @Override
-        public Integer key() {
-            return key;
-        }
-
-        @Override
         public void setSlugAndName(String slug, String name) {
             this.slug = slug;
             this.name = name;
@@ -66,29 +56,24 @@ public class DummyVenues implements Venues<Integer> {
     }
 
     @Override
-    public List<Venue<Integer>> getVenues() {
-        List<Venue<Integer>> venues = new LinkedList<>();
-        venues.addAll(this.venues.values());
-        return venues;
+    public Collection<DummyVenue> getVenues() {
+        return Collections.unmodifiableCollection(this.venues.values());
     }
 
     @Override
-    public KeyFactory<Integer> getKeyFactory() {
-        return KeyFactory.IntegerKeyFactory.SINGLETON;
+    public Venue getVenueBySlug(String slug) {
+        return venues.get(slug);
     }
 
     @Override
-    public Venue<Integer> getVenueByKey(Integer key) {
-        return venues.get(key);
-    }
-
-    @Override
-    public void addVenue(String slug, String name) {
+    public void addVenue(String slug, String name) throws DatabaseOperationException {
+        if(venues.containsKey(slug)){
+            throw new DatabaseOperationException("A venue with that slug already exists");
+        }
         DummyVenue v = new DummyVenue();
-        v.key = nextKey++;
         v.name = name;
         v.slug = slug;
-        venues.put(v.key, v);
+        venues.put(slug, v);
     }
     
 }

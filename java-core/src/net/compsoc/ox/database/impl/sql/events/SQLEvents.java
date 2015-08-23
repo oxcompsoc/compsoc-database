@@ -23,7 +23,7 @@ import net.compsoc.ox.database.iface.events.Venue;
 import net.compsoc.ox.database.impl.dummy.DummyTerms;
 import net.compsoc.ox.database.util.exceptions.DatabaseOperationException;
 
-public class SQLEvents implements Events<Integer, String> {
+public class SQLEvents implements Events<Integer> {
     
     private static final String Q_SELECT_ALL = "SELECT * FROM web_events ORDER BY start_ts DESC";
     private static final String Q_SELECT_SINGLE = "SELECT * FROM web_events WHERE event_id = ?";
@@ -86,8 +86,8 @@ public class SQLEvents implements Events<Integer, String> {
     }
     
     @Override
-    public synchronized List<Event<Integer, String>> getEvents() throws DatabaseOperationException {
-        List<Event<Integer, String>> list = new LinkedList<>();
+    public synchronized List<Event<Integer>> getEvents() throws DatabaseOperationException {
+        List<Event<Integer>> list = new LinkedList<>();
         try {
             ResultSet rs = selectAllEvents.executeQuery();
             while (rs.next())
@@ -99,7 +99,7 @@ public class SQLEvents implements Events<Integer, String> {
     }
     
     @Override
-    public synchronized Event<Integer, String> getEvent(Integer key) throws NotFoundException,
+    public synchronized Event<Integer> getEvent(Integer key) throws NotFoundException,
         InvalidKeyException, DatabaseOperationException {
         try {
             selectSingleEvent.setInt(1, key);
@@ -119,8 +119,8 @@ public class SQLEvents implements Events<Integer, String> {
     }
     
     @Override
-    public synchronized Event<Integer, String> addEvent(int year, Term term, String slug,
-        String title, String description, String facebookEventId, Venue<String> venue, Date start,
+    public synchronized Event<Integer> addEvent(int year, Term term, String slug,
+        String title, String description, String facebookEventId, Venue venue, Date start,
         Date end) throws DatabaseOperationException {
         try {
             insertEvent.setInt(1, year);
@@ -129,7 +129,7 @@ public class SQLEvents implements Events<Integer, String> {
             insertEvent.setString(4, title);
             insertEvent.setString(5, description);
             insertEvent.setString(6, facebookEventId);
-            insertEvent.setString(7, venue.key());
+            insertEvent.setString(7, venue.slug());
             insertEvent.setTimestamp(8, new Timestamp(start.getTime()));
             insertEvent.setTimestamp(9, new Timestamp(end.getTime()));
             
@@ -153,8 +153,8 @@ public class SQLEvents implements Events<Integer, String> {
     }
     
     @Override
-    public synchronized Event<Integer, String> updateEvent(Integer event, int year, Term term,
-        String slug, String title, String description, String facebookEventId, Venue<String> venue,
+    public synchronized Event<Integer> updateEvent(Integer event, int year, Term term,
+        String slug, String title, String description, String facebookEventId, Venue venue,
         Date start, Date end) throws DatabaseOperationException {
         try {
             
@@ -164,7 +164,7 @@ public class SQLEvents implements Events<Integer, String> {
             updateEvent.setString(4, title);
             updateEvent.setString(5, description);
             updateEvent.setString(6, facebookEventId);
-            updateEvent.setString(7, venue.key());
+            updateEvent.setString(7, venue.slug());
             updateEvent.setTimestamp(8, new Timestamp(start.getTime()));
             updateEvent.setTimestamp(9, new Timestamp(end.getTime()));
             updateEvent.setInt(10, event.intValue());

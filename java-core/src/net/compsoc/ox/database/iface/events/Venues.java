@@ -1,21 +1,18 @@
 package net.compsoc.ox.database.iface.events;
 
-import java.util.List;
+import java.util.Collection;
 
-import net.compsoc.ox.database.iface.core.KeyFactory;
+import net.compsoc.ox.database.util.exceptions.DatabaseOperationException;
 
-public interface Venues<Key> {
-    
-    public KeyFactory<Key> getKeyFactory();
+public interface Venues {
     
     /**
-     * @param key
-     * @return the {@link Venue} or null if none exists with that {@link Key}.
+     * @return the {@link Venue} or null if none exists with that slug.
      */
-    public Venue<Key> getVenueByKey(Key key);
+    public Venue getVenueBySlug(String slug);
     
-    public List<Venue<Key>> getVenues();
+    public Collection<? extends Venue> getVenues();
     
-    public void addVenue(String slug, String name);
+    public void addVenue(String slug, String name) throws DatabaseOperationException;
     
 }

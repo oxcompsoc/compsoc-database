@@ -9,7 +9,7 @@ import net.compsoc.ox.database.util.exceptions.DatabaseInitialisationException;
 
 public abstract class Database {
     
-    public abstract Events<?, ?> events();
+    public abstract Events<?> events();
     
     public static Database fromConfig(CompSocDatabaseConfig config)
         throws DatabaseInitialisationException, ConfigurationException {

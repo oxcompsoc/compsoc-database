@@ -35,11 +35,10 @@
       <th>Label</th>
       <th></th>
     </tr>
-    {% for wrapped_venue in venues %}
-      {% set venue = wrapped_venue.item %}
+    {% for venue in venues %}
       <tr>
         <form action="" method="POST">
-          <input type="hidden" name="venue" value="{{ wrapped_venue.keyString }}" />
+          <input type="hidden" name="venue" value="{{ venue.slug }}" />
   	      <input type="hidden" name="nonce" value="{{ nonce }}" />
           <td>
             <input type="text" class="form-control" name="venue_slug" value="{{ venue.slug }}" />

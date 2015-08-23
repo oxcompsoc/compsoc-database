@@ -6,7 +6,7 @@ import java.util.Set;
 import net.compsoc.ox.database.iface.core.IndexedItem;
 import net.compsoc.ox.database.util.exceptions.DatabaseOperationException;
 
-public interface Event<Key, VenueKey> extends IndexedItem<Key> {
+public interface Event<Key> extends IndexedItem<Key> {
     
     // Getters
     
@@ -18,7 +18,7 @@ public interface Event<Key, VenueKey> extends IndexedItem<Key> {
     public String title();
     public String description();
     public String facebookEventID();
-    public Venue<VenueKey> venue();
+    public Venue venue();
     public Set<Tag> tags() throws DatabaseOperationException;
     
     public Date startTimestamp();

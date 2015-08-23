@@ -19,7 +19,6 @@ import net.compsoc.ox.web.admin.util.PageBuilder;
 import net.compsoc.ox.web.admin.util.PathInfo;
 import net.compsoc.ox.web.admin.util.RedirectException;
 import net.compsoc.ox.web.admin.util.StatusException;
-import net.compsoc.ox.web.admin.util.database.WrappedIndexedItem;
 
 public class EditEventSection extends Section {
     
@@ -55,11 +54,11 @@ public class EditEventSection extends Section {
             renderPage(info, builder, builder.database.events());
         }
         
-        public <EKey, VKey> void renderPage(PathInfo info, PageBuilder builder,
-            Events<EKey, VKey> events) throws IOException, StatusException, RedirectException {
+        public <EKey> void renderPage(PathInfo info, PageBuilder builder,
+            Events<EKey> events) throws IOException, StatusException, RedirectException {
             
             // Get Event
-            Event<EKey, VKey> event;
+            Event<EKey> event;
             try {
                 EKey eventKey = events.getKeyFactory().fromString(info.slug());
                 event = events.getEvent(eventKey);
@@ -73,7 +72,7 @@ public class EditEventSection extends Section {
             fillFormWithData(builder, events, event);
             
             // Process form data
-            if (new EditEventFormHandler<EKey, VKey>(builder, events, event).handle(builder))
+            if (new EditEventFormHandler<EKey>(builder, events, event).handle(builder))
                 return;
             
             NonceManager.setupNonce(builder);
@@ -87,8 +86,8 @@ public class EditEventSection extends Section {
         
     }
     
-    private static <EKey, VKey> void fillFormWithData(PageBuilder builder,
-        Events<EKey, VKey> events, Event<EKey, VKey> event) {
+    private static <EKey> void fillFormWithData(PageBuilder builder,
+        Events<EKey> events, Event<EKey> event) {
         if (event.title() != null)
             builder.put("title", "Edit Event: " + event.title());
         else
@@ -97,8 +96,7 @@ public class EditEventSection extends Section {
         builder.put("button_label", "Save");
         
         builder.put("terms", events.terms().getTerms());
-        builder.put("venues", WrappedIndexedItem.wrappedIndexedItemList(events.venues()
-            .getKeyFactory(), events.venues().getVenues()));
+        builder.put("venues", events.venues().getVenues());
         builder.put("available_event_tags", events.tags().getTags());
         
         // Put properties
@@ -115,9 +113,9 @@ public class EditEventSection extends Section {
             builder.put("form_end_timestamp", EventsConstants.DATETIME_FORMAT.format(end));
         
         builder.put("form_facebook_event_id", event.facebookEventID());
-        Venue<VKey> v = event.venue();
+        Venue v = event.venue();
         if (v != null)
-            builder.put("form_venue", events.venues().getKeyFactory().toString(v.key()));
+            builder.put("form_venue", v.slug());
         
         builder.put("form_name", event.title());
         builder.put("form_description", event.description());
@@ -135,14 +133,14 @@ public class EditEventSection extends Section {
         builder.put("form_tags", tagsSB.toString());
     }
     
-    private static class EditEventFormHandler<EKey, VKey> extends
-        EventsAbstractFormHandler<EKey, VKey> {
+    private static class EditEventFormHandler<EKey> extends
+        EventsAbstractFormHandler<EKey> {
         
-        public final Event<EKey, VKey> event;
+        public final Event<EKey> event;
         private final PageBuilder builder;
         
-        public EditEventFormHandler(PageBuilder builder, Events<EKey, VKey> events,
-            Event<EKey, VKey> event) {
+        public EditEventFormHandler(PageBuilder builder, Events<EKey> events,
+            Event<EKey> event) {
             super(events);
             this.event = event;
             this.builder = builder;
@@ -150,7 +148,7 @@ public class EditEventSection extends Section {
         
         @Override
         public void handleData(int year, Term term, String slug, String title, String description,
-            String facebookEventId, Venue<VKey> venue, Date start, Date end, Set<Tag> tags)
+            String facebookEventId, Venue venue, Date start, Date end, Set<Tag> tags)
             throws RedirectException {
             try {
                 events.updateEvent(event.key(), year, term, slug, title, description,

@@ -1,7 +1,7 @@
 package net.compsoc.ox.web.admin.sections.events;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Collection;
 
 import net.compsoc.ox.database.iface.events.Events;
 import net.compsoc.ox.database.util.exceptions.DatabaseOperationException;
@@ -32,12 +32,12 @@ public class EventsSection extends Section {
         renderPage(info, builder, builder.database.events());
     }
     
-    public <EKey> void renderPage(PathInfo info, PageBuilder builder, Events<EKey, ?> events)
+    public <EKey> void renderPage(PathInfo info, PageBuilder builder, Events<EKey> events)
         throws IOException, StatusException {
         builder.put("title", MainSectionsEnum.EVENTS.label);
         
         try {
-            List<?> eventsList = WrappedIndexedItem.wrappedIndexedItemList(events.getKeyFactory(), events.getEvents());
+            Collection<?> eventsList = WrappedIndexedItem.wrappedIndexedItemList(events.getKeyFactory(), events.getEvents());
             builder.put("events", eventsList);
         } catch (DatabaseOperationException e) {
             builder.errors().add("Unable to fetch events");

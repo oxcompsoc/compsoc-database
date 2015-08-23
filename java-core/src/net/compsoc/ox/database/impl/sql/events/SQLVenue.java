@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 import net.compsoc.ox.database.iface.events.Venue;
 
-public class SQLVenue implements Venue<String> {
+public class SQLVenue implements Venue {
 
     private final String slug;
     
@@ -16,11 +16,6 @@ public class SQLVenue implements Venue<String> {
         throws SQLException {
         this.slug = currentSet.getString("venue_slug");
         this.name = currentSet.getString("venue_name");
-    }
-
-    @Override
-    public String key() {
-        return slug;
     }
 
     @Override

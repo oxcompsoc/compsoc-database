@@ -46,11 +46,11 @@ public class ViewEventsSection extends Section {
             renderPage(info, builder, builder.database.events());
         }
         
-        public <EKey> void renderPage(PathInfo info, PageBuilder builder, Events<EKey, ?> events)
+        public <EKey> void renderPage(PathInfo info, PageBuilder builder, Events<EKey> events)
             throws IOException, StatusException {
             
             // Get Event
-            Event<EKey, ?> event;
+            Event<EKey> event;
             try {
                 EKey eventKey = events.getKeyFactory().fromString(info.slug());
                 event = events.getEvent(eventKey);

@@ -23,7 +23,7 @@ import net.compsoc.ox.database.iface.events.Terms;
 import net.compsoc.ox.database.iface.events.Venue;
 import net.compsoc.ox.database.iface.events.Venues;
 
-public class DummyEvents extends DummyDatabaseObject implements Events<Integer, Integer> {
+public class DummyEvents extends DummyDatabaseObject implements Events<Integer> {
     
     private static final DateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
     
@@ -49,7 +49,7 @@ public class DummyEvents extends DummyDatabaseObject implements Events<Integer, 
             e.setFacebookEventID("1234");
             e.setStartTimestamp(FORMAT.parse("2015-01-19"));
             e.setEndTimestamp(new Date());
-            e.setVenue(venues().getVenueByKey(1));
+            e.setVenue(venues().getVenueBySlug("venue_1"));
             
             e = addEvent(2014, terms().getTermBySlug("trinity"), "geek_night_0");
             e.setTitle("Some Event");
@@ -57,7 +57,7 @@ public class DummyEvents extends DummyDatabaseObject implements Events<Integer, 
             e.setFacebookEventID("1234");
             e.setStartTimestamp(FORMAT.parse("2014-06-14"));
             e.setEndTimestamp(FORMAT.parse("2014-06-14"));
-            e.setVenue(venues().getVenueByKey(2));
+            e.setVenue(venues().getVenueBySlug("venue_2"));
             
         } catch (ParseException e) {
             e.printStackTrace();
@@ -70,7 +70,7 @@ public class DummyEvents extends DummyDatabaseObject implements Events<Integer, 
     }
     
     @Override
-    public Venues<Integer> venues() {
+    public Venues venues() {
         if (venues == null)
             venues = new DummyVenues();
         return venues;
@@ -85,7 +85,7 @@ public class DummyEvents extends DummyDatabaseObject implements Events<Integer, 
     
     @Override
     public synchronized DummyEvent addEvent(int year, Term term, String slug, String title,
-        String description, String facebookEventId, Venue<Integer> venue, Date start, Date end) {
+        String description, String facebookEventId, Venue venue, Date start, Date end) {
         int k = nextKey++;
         DummyEvent e = new DummyEvent(db, k, year, term, slug);
         e.setTitle(title);
@@ -129,9 +129,10 @@ public class DummyEvents extends DummyDatabaseObject implements Events<Integer, 
     }
     
     @Override
-    public Event<Integer, Integer> updateEvent(Integer event, int year, Term term, String slug,
-        String title, String description, String facebookEventId, Venue<Integer> venue, Date start,
-        Date end) throws NotFoundException, InvalidKeyException {
+    public Event<Integer>
+        updateEvent(Integer event, int year, Term term, String slug, String title,
+            String description, String facebookEventId, Venue venue, Date start, Date end)
+            throws NotFoundException, InvalidKeyException {
         DummyEvent e = getEvent(event);
         e.setPrimary(year, term, slug);
         e.setTitle(title);

@@ -20,7 +20,6 @@ import net.compsoc.ox.web.admin.util.PageBuilder;
 import net.compsoc.ox.web.admin.util.PathInfo;
 import net.compsoc.ox.web.admin.util.RedirectException;
 import net.compsoc.ox.web.admin.util.StatusException;
-import net.compsoc.ox.web.admin.util.database.WrappedIndexedItem;
 
 public class AddEventSection extends Section {
     
@@ -35,8 +34,8 @@ public class AddEventSection extends Section {
         renderPage(info, builder, builder.database.events());
     }
     
-    public <EKey, VKey> void renderPage(PathInfo info, PageBuilder builder,
-        Events<EKey, VKey> events) throws IOException, StatusException, RedirectException {
+    public <EKey> void renderPage(PathInfo info, PageBuilder builder,
+        Events<EKey> events) throws IOException, StatusException, RedirectException {
         builder.put("title", "Add Event");
         builder.put("button_label", "Add Event");
         
@@ -45,12 +44,11 @@ public class AddEventSection extends Section {
         calendar.setTime(new Date());
         builder.put("form_year", calendar.get(Calendar.YEAR));
         
-        if (new AddEventFormHandler<EKey, VKey>(builder, events).handle(builder))
+        if (new AddEventFormHandler<EKey>(builder, events).handle(builder))
             return;
         
         builder.put("terms", builder.database.events().terms().getTerms());
-        builder.put("venues", WrappedIndexedItem.wrappedIndexedItemList(events.venues()
-            .getKeyFactory(), events.venues().getVenues()));
+        builder.put("venues", events.venues().getVenues());
         builder.put("available_event_tags", builder.database.events().tags().getTags());
         
         NonceManager.setupNonce(builder);
@@ -62,21 +60,21 @@ public class AddEventSection extends Section {
         return null;
     }
     
-    private static class AddEventFormHandler<EKey, VKey> extends
-        EventsAbstractFormHandler<EKey, VKey> {
+    private static class AddEventFormHandler<EKey> extends
+        EventsAbstractFormHandler<EKey> {
         
         private final PageBuilder builder;
         
-        public AddEventFormHandler(PageBuilder builder, Events<EKey, VKey> events) {
+        public AddEventFormHandler(PageBuilder builder, Events<EKey> events) {
             super(events);
             this.builder = builder;
         }
 
         @Override
         public void handleData(int year, Term term, String slug, String title, String description,
-            String facebookEventId, Venue<VKey> venue, Date start, Date end, Set<Tag> tags)
+            String facebookEventId, Venue venue, Date start, Date end, Set<Tag> tags)
             throws RedirectException {
-            Event<EKey, VKey> event;
+            Event<EKey> event;
             try {
                 event = events.addEvent(year, term, slug, title, description, facebookEventId, venue, start, end);
             } catch (DatabaseOperationException e) {

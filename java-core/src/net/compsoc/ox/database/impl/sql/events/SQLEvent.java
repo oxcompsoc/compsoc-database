@@ -13,7 +13,7 @@ import net.compsoc.ox.database.iface.events.Venue;
 import net.compsoc.ox.database.util.TermDatesUtil;
 import net.compsoc.ox.database.util.exceptions.DatabaseOperationException;
 
-public class SQLEvent implements Event<Integer, String> {
+public class SQLEvent implements Event<Integer> {
 
     private final SQLEvents events;
     
@@ -25,7 +25,7 @@ public class SQLEvent implements Event<Integer, String> {
     private final String title;
     private final String description;
     private final String facebookEventID;
-    private final String venueKey;
+    private final String venueSlug;
     private final Date startTimestamp;
     private final Date endTimestamp;
     
@@ -40,7 +40,7 @@ public class SQLEvent implements Event<Integer, String> {
         this.title = currentSet.getString("title");
         this.description = currentSet.getString("description");
         this.facebookEventID = currentSet.getString("facebook_event_id");
-        this.venueKey = currentSet.getString("venue");
+        this.venueSlug = currentSet.getString("venue");
         this.startTimestamp = new Date(currentSet.getTimestamp("start_ts").getTime());
         this.endTimestamp = new Date(currentSet.getTimestamp("end_ts").getTime());
     }
@@ -81,8 +81,8 @@ public class SQLEvent implements Event<Integer, String> {
     }
 
     @Override
-    public Venue<String> venue() {
-        return venueKey == null ? null : events.venues().getVenueByKey(venueKey);
+    public Venue venue() {
+        return venueSlug == null ? null : events.venues().getVenueBySlug(venueSlug);
     }
 
     @Override
