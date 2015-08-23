@@ -16,14 +16,12 @@ public class SQLTags implements Tags {
     
     private static final String Q_SELECT_ALL = "SELECT * FROM web_tags ORDER BY tag_name ASC";
     
-    private final Connection connection;
     private final PreparedStatement selectAllTags;
 
     private Map<Integer, Tag> cache;
     private Map<String, Tag> slugCache;
     
     public SQLTags(Connection connection) throws SQLException {
-        this.connection = connection;
         this.selectAllTags = connection.prepareStatement(Q_SELECT_ALL);
     }
 
@@ -51,7 +49,7 @@ public class SQLTags implements Tags {
             try {
                 ResultSet rs = selectAllTags.executeQuery();
                 while (rs.next()){
-                    SQLTag tag = new SQLTag(connection, rs);
+                    SQLTag tag = new SQLTag(rs);
                     cache.put(tag.key(), tag);
                     slugCache.put(tag.slug(), tag);
                 }

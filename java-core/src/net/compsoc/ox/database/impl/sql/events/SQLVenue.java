@@ -7,17 +7,13 @@ import java.sql.SQLException;
 import net.compsoc.ox.database.iface.events.Venue;
 
 public class SQLVenue implements Venue<String> {
-    
-    private final Connection connection;
 
     private final String slug;
     
-    private String name;
+    private final String name;
     
     public SQLVenue(Connection connection, ResultSet currentSet)
         throws SQLException {
-        this.connection = connection;
-
         this.slug = currentSet.getString("venue_slug");
         this.name = currentSet.getString("venue_name");
     }
@@ -28,7 +24,7 @@ public class SQLVenue implements Venue<String> {
     }
 
     @Override
-    public synchronized String name() {
+    public String name() {
         return name;
     }
 
@@ -38,7 +34,7 @@ public class SQLVenue implements Venue<String> {
     }
 
     @Override
-    public synchronized void setSlugAndName(String slug, String name) {
+    public void setSlugAndName(String slug, String name) {
         
     }
     

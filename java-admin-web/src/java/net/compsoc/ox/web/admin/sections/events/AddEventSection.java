@@ -87,6 +87,9 @@ public class AddEventSection extends Section {
                 events.setTags(event.key(), tags);
             } catch (NotFoundException | InvalidKeyException e) {
                 throw new RuntimeException("Unexpected exception during event creation", e);
+            } catch (DatabaseOperationException e) {
+                builder.errors().add("Unable to set tags for event: " + e.getMessage());
+                return;
             }
             
             String msg =

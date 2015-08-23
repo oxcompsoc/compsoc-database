@@ -33,12 +33,17 @@ public class SQLEvents implements Events<Integer, String> {
         "INSERT INTO web_events (year, term, event_slug, title, description, facebook_event_id, venue, start_ts, end_ts) VALUES (?, ?::term, ?, ?, ?, ?, ?, ?, ?)";
     private static final String Q_UPDATE =
         "UPDATE web_events SET year = ?, term = ?::term, event_slug = ?, title = ?, description = ?, facebook_event_id = ?, venue = ?, start_ts = ?, end_ts = ? WHERE event_id = ?";
+    private static final String Q_CLEAR_TAGS = "DELETE FROM web_event_tags WHERE event_id = ?";
+    private static final String Q_INSERT_TAG =
+        "INSERT INTO web_event_tags (event_id, tag_id) VALUES (?, ?)";
     
     private final PreparedStatement selectAllEvents;
     private final PreparedStatement selectSingleEvent;
     private final PreparedStatement selectEventTags;
     private final PreparedStatement insertEvent;
     private final PreparedStatement updateEvent;
+    private final PreparedStatement clearTags;
+    private final PreparedStatement insertTag;
     
     private Terms terms; // Lazily Instantiated
     private final SQLVenues venues;
@@ -50,6 +55,8 @@ public class SQLEvents implements Events<Integer, String> {
         this.selectEventTags = connection.prepareStatement(Q_SELECT_EVENT_TAGS);
         this.insertEvent = connection.prepareStatement(Q_INSERT, Statement.RETURN_GENERATED_KEYS);
         this.updateEvent = connection.prepareStatement(Q_UPDATE);
+        this.clearTags = connection.prepareStatement(Q_CLEAR_TAGS);
+        this.insertTag = connection.prepareStatement(Q_INSERT_TAG);
         
         tags = new SQLTags(connection);
         venues = new SQLVenues(connection);
@@ -177,9 +184,20 @@ public class SQLEvents implements Events<Integer, String> {
     }
     
     @Override
-    public synchronized void setTags(Integer event, Set<Tag> tags) {
-        // TODO Auto-generated method stub
-        
+    public synchronized void setTags(Integer event, Set<Tag> tags)
+        throws DatabaseOperationException {
+        try {
+            clearTags.setInt(1, event.intValue());
+            clearTags.executeUpdate();
+
+            insertTag.setInt(1, event.intValue());
+            for(Tag tag : tags){
+                insertTag.setInt(2, ((SQLTag)tag).key());
+                insertTag.executeUpdate();
+            }
+        } catch (SQLException e) {
+            throw new DatabaseOperationException(e);
+        }
     }
     
 }
